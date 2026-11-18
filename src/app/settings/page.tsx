@@ -7,6 +7,8 @@ import { GIFT_COOLDOWN_DAYS, MAX_CREDIT_LIMIT, MAX_GIFT_AMOUNT } from "@/lib/con
 import { giftCooldown } from "@/lib/gift/status";
 import { GiftForm } from "@/components/GiftForm";
 import { DecideLimitForm, RequestLimitForm, SetPartnerLimitForm, WithdrawLimitForm } from "@/components/CreditForms";
+import { NicknameForm } from "@/components/NicknameForm";
+import { signOutAction } from "@/lib/pairing/actions";
 
 // 內容因人而異,整頁都是動態內容(T13 再以 Suspense 與骨架畫面優化)
 export const instant = false;
@@ -39,12 +41,22 @@ export default async function SettingsPage() {
   const { cooling, nextAt } = giftCooldown(lastGift.data?.created_at ?? null, serverNow());
   const nextText = nextAt?.toLocaleString("zh-TW", { timeZone: "Asia/Taipei", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
 
+  const row = "flex items-center justify-between gap-3 border-t border-primary-soft py-3 first:border-t-0 transition active:opacity-70 motion-reduce:transition-none";
+
   return (
-    <main className="mx-auto flex w-full max-w-sm flex-1 flex-col gap-6 p-6">
-      <Link href="/" className="text-sm text-muted underline">
-        ← 回首頁
-      </Link>
+    <main className="mx-auto flex w-full max-w-sm flex-1 flex-col gap-5 p-6">
       <h1 className="text-center text-3xl text-primary-strong">設定 💙</h1>
+
+      <section className="flex flex-col gap-3 rounded-card bg-surface p-6 shadow-sm">
+        <h2 className="text-xl text-foreground">我的暱稱</h2>
+        <p className="text-lg text-primary-strong">{me.nickname}</p>
+        <details>
+          <summary className="cursor-pointer text-sm text-muted">修改暱稱</summary>
+          <div className="mt-3">
+            <NicknameForm current={me.nickname} />
+          </div>
+        </details>
+      </section>
 
       <section className="flex flex-col gap-3 rounded-card bg-surface p-6 shadow-sm">
         <h2 className="text-xl text-foreground">愛心貸款額度 🌱</h2>
@@ -74,19 +86,25 @@ export default async function SettingsPage() {
             <WithdrawLimitForm id={myPending.id} />
           </div>
         ) : (
-          <>
+          <details className="rounded-2xl bg-primary-soft/60 p-4" open={Boolean(!theirPending && !myLast)}>
+            <summary className="cursor-pointer text-lg text-foreground">想要預支我的愛心額度</summary>
             {myLast && (
-              <p className="text-sm text-muted">
+              <p className="mt-2 text-sm text-muted">
                 上一次申請 {myLast.requested_limit}:{myLast.status === "approved" ? "已經同意了 ✓" : myLast.status === "withdrawn" ? "你撤回了" : "婉拒了,沒有關係,之後還可以再申請"}
               </p>
             )}
-            <h3 className="mt-2 text-lg text-foreground">想要預支我的愛心額度</h3>
-            <RequestLimitForm max={MAX_CREDIT_LIMIT} />
-          </>
+            <div className="mt-3">
+              <RequestLimitForm max={MAX_CREDIT_LIMIT} />
+            </div>
+          </details>
         )}
 
-        <h3 className="mt-4 text-lg text-foreground">直接調整{partner}可預支的額度</h3>
-        <SetPartnerLimitForm partner={partner} max={MAX_CREDIT_LIMIT} current={partnerLimit} />
+        <details className="rounded-2xl bg-primary-soft/60 p-4">
+          <summary className="cursor-pointer text-lg text-foreground">直接調整{partner}可預支的額度</summary>
+          <div className="mt-3">
+            <SetPartnerLimitForm partner={partner} max={MAX_CREDIT_LIMIT} current={partnerLimit} />
+          </div>
+        </details>
       </section>
 
       <section className="flex flex-col gap-3 rounded-card bg-surface p-6 shadow-sm">
@@ -105,6 +123,35 @@ export default async function SettingsPage() {
           <GiftForm partner={partner} max={giftable} />
         )}
       </section>
+
+      <section className="rounded-card bg-surface px-6 py-3 shadow-sm">
+        <ul>
+          <li>
+            <Link href="/ledger" className={row}>
+              <span>📒 我的愛心帳本</span>
+              <span aria-hidden>→</span>
+            </Link>
+          </li>
+          <li>
+            <Link href="/proposals" className={row}>
+              <span>✨ 想要{partner}提供的服務</span>
+              <span aria-hidden>→</span>
+            </Link>
+          </li>
+          <li>
+            <Link href="/help" className={row}>
+              <span>💬 愛愛小幫手</span>
+              <span aria-hidden>→</span>
+            </Link>
+          </li>
+        </ul>
+      </section>
+
+      <form action={signOutAction} className="text-center">
+        <button type="submit" className="text-sm text-muted underline">
+          登出
+        </button>
+      </form>
     </main>
   );
 }

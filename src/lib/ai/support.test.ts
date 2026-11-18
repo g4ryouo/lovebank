@@ -92,7 +92,7 @@ describe("知識庫", () => {
     }
   });
   it("涵蓋主要玩法", () => {
-    for (const kw of ["預留", "婉拒", "這次免費", "額度", "服務提案", "零用愛心", "願望進度條", "我想為你做", "隱私"]) expect(SUPPORT_KNOWLEDGE).toContain(kw);
+    for (const kw of ["預留", "婉拒", "這次免費", "額度", "服務提案", "零用愛心", "存愛心進度條", "我想為你做", "隱私"]) expect(SUPPORT_KNOWLEDGE).toContain(kw);
   });
   it("不含機密或個人資料的樣子", () => {
     expect(SUPPORT_KNOWLEDGE).not.toMatch(/sk-ant|service_role|supabase\.co|@[a-z0-9.-]+\.[a-z]{2,}|[0-9a-f]{8}-[0-9a-f]{4}/i);

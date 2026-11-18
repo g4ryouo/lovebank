@@ -45,10 +45,13 @@ export function heartText(o: LabelOrder, me: string): string {
   return iAmGiver ? `完成後你會收下 ${amount} 愛心` : `完成後你會送出 ${amount} 愛心`;
 }
 
-/** 分組:等我回應 / 進行中 / 已結束 */
+/**
+ * 分組:等我處理 / 進行中 / 已結束。
+ * 「等我處理」= 現在輪到我動作:回應對方的邀請、去做已接受的服務(按「做完了」)、確認對方做完了。
+ */
 export function groupOf(o: LabelOrder, me: string): "waiting-me" | "ongoing" | "done" {
   if (o.status === "requested") return o.initiated_by === me ? "ongoing" : "waiting-me";
+  if (o.status === "accepted") return o.giver_id === me ? "waiting-me" : "ongoing";
   if (o.status === "done_by_giver") return o.receiver_id === me ? "waiting-me" : "ongoing";
-  if (o.status === "accepted") return "ongoing";
   return "done";
 }

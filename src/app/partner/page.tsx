@@ -35,6 +35,7 @@ export default async function PartnerPage() {
         <p className="mt-1 text-xs text-muted">想主動為他提供服務?到「我的菜單」,每個服務旁邊都有邀請按鈕</p>
         <p className="mt-3 text-muted">
           我的愛心 <span className="text-xl text-primary-strong">{wallet.balance}</span>
+          {wallet.available !== wallet.balance && <span className="block text-sm">可以用的 {wallet.available}</span>}
         </p>
       </header>
 
@@ -55,7 +56,9 @@ export default async function PartnerPage() {
           </div>
         )}
         {wants.map((item, i) => {
-          const short = item.price > 0 && item.price > wallet.balance;
+          // 「能不能邀請」以可用愛心(餘額 + 貸款額度 − 預留)為準,進度條與按鈕才不會互相矛盾
+          const affordable = wallet.canAfford(item.price);
+          const usesLoan = affordable && item.price > wallet.balance;
           return (
             <article key={item.id} style={{ ["--i" as string]: Math.min(i, 8) }} className="fade-up flex flex-col gap-3 rounded-card bg-surface p-5 shadow-sm">
               <div className="flex items-center justify-between gap-3">
@@ -64,23 +67,30 @@ export default async function PartnerPage() {
                 </p>
                 <p className="shrink-0 text-lg text-primary-strong">{priceText(item.price)}</p>
               </div>
-              {short && (
+              {!affordable && (
                 <div className="flex flex-col gap-1">
-                  <WishBar progress={wishProgress(wallet.balance, item.price)} label={`${item.title} 的願望進度`} />
-                  <p className="text-xs text-muted">還差 {item.price - wallet.balance} 愛心就能實現囉</p>
+                  <WishBar progress={wishProgress(wallet.available, item.price)} label={`${item.title} 的存愛心進度`} />
+                  <p className="text-xs text-muted">還差 {item.price - wallet.available} 愛心就能邀請囉</p>
                 </div>
               )}
+              {usesLoan && <p className="text-xs text-muted">會預先使用 {item.price - Math.max(wallet.balance, 0)} 的愛心貸款額度</p>}
               <OrderButton
                 itemId={item.id}
                 kind="want"
                 partner={partner}
                 label="我想要"
-                disabledText={wallet.canAfford(item.price) ? undefined : "愛心還不夠,再存一下吧"}
+                disabledText={affordable ? undefined : "愛心還不夠,再存一下吧"}
               />
             </article>
           );
         })}
       </section>
+
+      {wants.length > 0 && (
+        <Link href="/proposals" className="rounded-card bg-primary-soft p-5 text-center text-sm text-primary-strong">
+          沒有你想要的服務嗎?提出「想要{partner}提供的服務」→
+        </Link>
+      )}
     </main>
   );
 }

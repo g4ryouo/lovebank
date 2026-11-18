@@ -8,6 +8,8 @@ import { friendlyError } from "@/lib/errors";
 export interface OrderFormState {
   error?: string;
   message?: string;
+  /** 剛建立的邀請,畫面用來提供「去看這個邀請」的連結 */
+  orderId?: string;
 }
 
 const idSchema = z.string().uuid();
@@ -25,12 +27,13 @@ export async function createOrderAction(_prev: OrderFormState, formData: FormDat
   const partner = String(formData.get("partner") ?? "對方").slice(0, 20);
 
   const supabase = await createClient();
-  const { error } = await supabase.rpc("create_order", { p_menu_item_id: id.data });
+  const { data, error } = await supabase.rpc("create_order", { p_menu_item_id: id.data });
   if (error) return { error: friendlyError(error.message) };
 
   revalidatePath("/partner");
   revalidatePath("/");
   return {
+    orderId: data?.id,
     message:
       kind === "want"
         ? `已經邀請 ${partner} 囉,等他回應吧 💙`

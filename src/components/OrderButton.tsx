@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { createOrderAction, type OrderFormState } from "@/lib/orders/actions";
 import { SubmitButton } from "./SubmitButton";
@@ -30,6 +31,23 @@ export function OrderButton({
       <button type="button" disabled className="w-full rounded-full bg-primary-soft px-6 py-4 text-lg text-muted">
         {disabledText}
       </button>
+    );
+  }
+
+  // 送出成功:按鈕鎖住(避免不小心重複邀請),並提供去看這個邀請的連結
+  if (state.orderId) {
+    return (
+      <div className="flex flex-col gap-2">
+        <button type="button" disabled className="w-full rounded-full bg-primary-soft px-6 py-4 text-lg text-primary-strong">
+          已送出邀請 ✓
+        </button>
+        <p role="status" className="text-center text-sm text-primary-strong">
+          {state.message}
+        </p>
+        <Link href={`/orders/${state.orderId}`} className="text-center text-sm text-primary-strong underline">
+          去看這個邀請 →
+        </Link>
+      </div>
     );
   }
 

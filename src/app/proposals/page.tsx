@@ -75,8 +75,10 @@ export default async function ProposalsPage() {
             <Opinion verdict={p.counter_ai_verdict} comment={p.counter_ai_comment} />
           </>
         )}
+        {/* 主要動作排最前面:同意 → 還價 → 婉拒(婉拒是安靜的文字按鈕,放最後) */}
+        <ProposalButtons id={p.id} actions={simple.filter((a) => a === "agree" || a === "accept_counter")} />
         {actions.includes("counter") && <CounterForm id={p.id} currentPrice={p.price} />}
-        <ProposalButtons id={p.id} actions={simple} />
+        <ProposalButtons id={p.id} actions={simple.filter((a) => a !== "agree" && a !== "accept_counter")} />
       </article>
     );
   };

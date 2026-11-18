@@ -8,6 +8,9 @@ import { AutoRefresh } from "@/components/AutoRefresh";
 // 內容因人而異,整頁都是動態內容(T13 再以 Suspense 與骨架畫面優化)
 export const instant = false;
 
+const when = (iso: string) =>
+  new Date(iso).toLocaleString("zh-TW", { timeZone: "Asia/Taipei", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
+
 const COLUMNS = "id, status, title_snapshot, emoji_snapshot, price_snapshot, settled_amount, giver_id, receiver_id, initiated_by, created_at";
 
 export default async function OrdersPage() {
@@ -44,7 +47,9 @@ export default async function OrdersPage() {
           </p>
           <p className="text-sm text-muted">{whoText(o, user.id, partner)}</p>
           <p className="text-sm text-primary-strong">{statusLabel(o, user.id, partner)}</p>
-          <p className="text-xs text-muted">{heartText(o, user.id)}</p>
+          <p className="text-xs text-muted">
+            {heartText(o, user.id)} · {when(o.created_at)}
+          </p>
         </Link>
       ))}
     </section>
@@ -57,7 +62,7 @@ export default async function OrdersPage() {
         ← 回首頁
       </Link>
       <h1 className="text-center text-3xl text-primary-strong">我們的邀請 💙</h1>
-      {section("等我回應", groups["waiting-me"], "目前沒有要回應的,真輕鬆 ✨", true)}
+      {section("等我處理", groups["waiting-me"], "目前沒有要處理的,真輕鬆 ✨", true)}
       {section("進行中", groups.ongoing, "還沒有進行中的邀請")}
       {section("已結束", groups.done, "還沒有結束的邀請")}
     </main>

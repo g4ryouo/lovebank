@@ -38,7 +38,7 @@ const BUTTONS: Record<UiOrderAction, { label: (ctx: Ctx) => string; variant: "pr
   mark_done: { label: () => "做完了", variant: "primary" },
   confirm: { label: (c) => (c.amount > 0 ? `確認,送出 ${c.amount} 愛心` : "確認"), variant: "primary" },
   waive: { label: () => "這次免費", variant: "soft" },
-  cancel: { label: (c) => (c.status === "requested" ? "取消這個邀請" : "取消"), variant: "quiet" },
+  cancel: { label: () => "取消這個邀請", variant: "quiet" },
 };
 
 interface Ctx {
@@ -56,6 +56,9 @@ export function OrderActionButtons({ id, actions, amount, status }: { id: string
       {actions.map((a) => (
         <ActionButton key={a} value={a} label={BUTTONS[a].label({ amount, status })} variant={BUTTONS[a].variant} />
       ))}
+      {actions.includes("waive") && (
+        <p className="text-center text-xs text-muted">「這次免費」:這次不收愛心,雙方的愛心都不會變</p>
+      )}
       {state.error && (
         <p role="alert" className="text-center text-sm text-rose-500">
           {state.error}

@@ -48,8 +48,11 @@ export function MenuList({ items, partner }: { items: MenuItemView[]; partner: s
               </p>
               <p className="shrink-0 text-lg text-primary-strong">{priceText(item.price)}</p>
             </div>
+            <p className="mt-2 text-xs text-muted">
+              {item.price === 0 ? "這個服務是免費的" : `他接受、你做完、他確認後,你會收下 ${item.price} 愛心`}
+            </p>
             <div className="mt-3">
-              <OrderButton itemId={item.id} kind="offer" partner={partner} label={`邀請 ${partner}`} />
+              <OrderButton itemId={item.id} kind="offer" partner={partner} label={`邀請${partner}來享受`} />
             </div>
             <details className="mt-3">
               <summary className="cursor-pointer text-sm text-muted">修改</summary>

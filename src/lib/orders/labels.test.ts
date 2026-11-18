@@ -22,8 +22,11 @@ describe("groupOf", () => {
     expect(groupOf(o({ status: "done_by_giver" }), R)).toBe("waiting-me");
     expect(groupOf(o({ status: "done_by_giver" }), G)).toBe("ongoing");
   });
-  it("accepted 為進行中;終態為已結束", () => {
-    expect(groupOf(o({ status: "accepted" }), G)).toBe("ongoing");
+  it("accepted:提供者要去做 → 等我處理;被服務的人在等 → 進行中", () => {
+    expect(groupOf(o({ status: "accepted" }), G)).toBe("waiting-me");
+    expect(groupOf(o({ status: "accepted" }), R)).toBe("ongoing");
+  });
+  it("終態為已結束", () => {
     for (const s of ["completed", "declined", "cancelled", "expired"] as const) expect(groupOf(o({ status: s }), G)).toBe("done");
   });
 });
