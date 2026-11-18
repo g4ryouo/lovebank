@@ -106,6 +106,8 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 - 畫面:`/login`、`/pair`。配對完成發放 `initial`。
 - Playwright 流程:登入 → 建立 → 另一帳號加入(用測試帳號或 mock auth)。
 
+**進度備註**:`0006_pairing.sql`(`create_couple`、`join_couple`)與 pgTAP(43 項)、同時加入的並發測試已完成並通過(本機 PostgreSQL 驗證)。**待做**:套件(`@supabase/supabase-js`、`@supabase/ssr`、`zod`,需先經同意)、`/login`、`/pair` 畫面、Playwright。Supabase 專案與 LINE channel 已由使用者建立,尚待實測登入。
+
 **驗收**:兩個帳號能配成一對;第三人加入失敗;雙方各有 2000 愛心。
 
 ---

@@ -228,6 +228,9 @@ isOneToOne: false
         isOneToOne: true
         isSetofReturn: false
       } },
+"_new_invite_code":
+{ Args: Record<PropertyKey, never>; Returns: string
+                           },
 "_reserved":
 { Args: { "p_user": string }; Returns: number
                            },
@@ -318,6 +321,23 @@ isOneToOne: false
         isOneToOne: true
         isSetofReturn: false
       } },
+"create_couple":
+{ Args: { "p_nickname": string }; Returns: {
+              "created_at": string,
+"daily_allowance": number,
+"id": string,
+"initial_grant": number,
+"invite_code": string,
+"invite_expires_at": string,
+"paired_at": string | null,
+"timezone": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "couples"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "create_order":
 { Args: { "p_menu_item_id": string,"p_note"?: string }; Returns: {
               "accepted_at": string | null,
@@ -349,6 +369,23 @@ isOneToOne: false
 "current_couple_id":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
+"join_couple":
+{ Args: { "p_code": string,"p_nickname": string }; Returns: {
+              "created_at": string,
+"daily_allowance": number,
+"id": string,
+"initial_grant": number,
+"invite_code": string,
+"invite_expires_at": string,
+"paired_at": string | null,
+"timezone": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "couples"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "mark_done":
 { Args: { "p_order_id": string }; Returns: {
               "accepted_at": string | null,

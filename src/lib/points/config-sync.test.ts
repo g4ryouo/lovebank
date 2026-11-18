@@ -12,5 +12,6 @@ describe("SQL 規則常數與 config.ts 同步", () => {
   it("REQUEST_EXPIRE_DAYS", () => expect(cfg.get("REQUEST_EXPIRE_DAYS")).toBe(config.REQUEST_EXPIRE_DAYS));
   it("ALLOWANCE_CATCH_UP_DAYS", () =>
     expect(cfg.get("ALLOWANCE_CATCH_UP_DAYS")).toBe(config.ALLOWANCE_CATCH_UP_DAYS));
-  it("沒有多餘的 SQL 常數", () => expect(cfg.size).toBe(3));
+  it("INVITE_CODE_TTL_DAYS", () => expect(cfg.get("INVITE_CODE_TTL_DAYS")).toBe(config.INVITE_CODE_TTL_DAYS));
+  it("沒有多餘的 SQL 常數", () => expect(cfg.size).toBe(4));
 });

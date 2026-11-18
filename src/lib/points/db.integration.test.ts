@@ -156,4 +156,28 @@ describe.skipIf(!URL)("資料庫同時執行(整合測試)", { timeout: 60_000 }
     expect(b.code).not.toBe(0);
     expect(b.err).toContain("INSUFFICIENT_CREDIT");
   });
+
+  it("兩個人同時用同一個邀請碼加入:恰好一人成功,另一人 COUPLE_FULL", async () => {
+    const creator = randomUUID();
+    const a = randomUUID();
+    const b = randomUUID();
+    const ins = await psql(
+      `insert into auth.users (id, email) values ('${creator}', '${creator}@it'), ('${a}', '${a}@it'), ('${b}', '${b}@it');`,
+    );
+    if (ins.code !== 0) throw new Error(ins.err);
+    const created = await psql(session(creator, `select (public.create_couple('甲')).invite_code;`));
+    expect(created.code).toBe(0);
+    const code = created.out.trim().split("\n").pop() ?? "";
+
+    const x = psql(session(a, `select (public.join_couple('${code}', 'A')).id;`, 1.2));
+    await sleep(400);
+    const y = await psql(session(b, `select (public.join_couple('${code}', 'B')).id;`));
+    const xRes = await x;
+
+    const results = [xRes, y];
+    expect(results.filter((r) => r.code === 0)).toHaveLength(1);
+    expect(results.find((r) => r.code !== 0)?.err).toContain("COUPLE_FULL");
+    expect(await scalar(`select count(*) from public.profiles where id in ('${creator}', '${a}', '${b}')`)).toBe("2");
+    expect(await scalar(`select count(*) from public.ledger where user_id in ('${creator}', '${a}', '${b}') and reason = 'initial'`)).toBe("2");
+  });
 });

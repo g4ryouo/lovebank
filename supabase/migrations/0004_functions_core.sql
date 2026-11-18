@@ -11,6 +11,7 @@ language sql immutable set search_path = '' as $$
     when 'AUTO_CONFIRM_HOURS' then 24
     when 'REQUEST_EXPIRE_DAYS' then 3
     when 'ALLOWANCE_CATCH_UP_DAYS' then 7
+    when 'INVITE_CODE_TTL_DAYS' then 7
   end;
 $$;
 
