@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getViewer } from "@/lib/auth/viewer";
-import { applyTemplateAction, setActiveAction } from "@/lib/menu/actions";
+import { applyTemplateAction } from "@/lib/menu/actions";
 import { unappliedTemplates } from "@/lib/menu/templates";
-import { AddItemForm, EditItemForm } from "@/components/MenuForms";
+import { AddItemForm } from "@/components/MenuForms";
+import { MenuList } from "@/components/MenuList";
 import { SubmitButton } from "@/components/SubmitButton";
 
 // 內容因人而異,整頁都是動態內容(T13 再以 Suspense 與骨架畫面優化)
@@ -19,8 +20,6 @@ export default async function MenuPage() {
     .eq("owner_id", user.id)
     .order("created_at", { ascending: true });
   const items = data ?? [];
-  const active = items.filter((i) => i.active);
-  const inactive = items.filter((i) => !i.active);
   const templates = unappliedTemplates(items.map((i) => i.title));
 
   return (
@@ -52,52 +51,7 @@ export default async function MenuPage() {
         </section>
       )}
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg text-foreground">目前的小心願</h2>
-        {active.length === 0 && <p className="text-sm text-muted">還沒有小心願,先從上面一鍵加入,或自己新增一個吧</p>}
-        {active.map((item) => (
-          <article key={item.id} className="rounded-card bg-surface p-5 shadow-sm">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-xl text-foreground">
-                {item.emoji} {item.title}
-              </p>
-              <p className="shrink-0 text-lg text-primary-strong">{item.price === 0 ? "免費" : `${item.price} 愛心`}</p>
-            </div>
-            <details className="mt-2">
-              <summary className="cursor-pointer text-sm text-muted">修改</summary>
-              <EditItemForm item={item} />
-            </details>
-            <form action={setActiveAction} className="mt-3">
-              <input type="hidden" name="id" value={item.id} />
-              <input type="hidden" name="active" value="false" />
-              <button type="submit" className="text-sm text-muted underline">
-                先暫停這個小心願
-              </button>
-            </form>
-          </article>
-        ))}
-      </section>
-
-      {inactive.length > 0 && (
-        <section className="flex flex-col gap-3">
-          <h2 className="text-lg text-foreground">暫停中(對方看不到)</h2>
-          {inactive.map((item) => (
-            <article key={item.id} className="rounded-card bg-surface/70 p-5 shadow-sm">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-xl text-muted">
-                  {item.emoji} {item.title}
-                </p>
-                <p className="shrink-0 text-muted">{item.price === 0 ? "免費" : `${item.price} 愛心`}</p>
-              </div>
-              <form action={setActiveAction} className="mt-3">
-                <input type="hidden" name="id" value={item.id} />
-                <input type="hidden" name="active" value="true" />
-                <SubmitButton pendingText="恢復中…">恢復這個小心願</SubmitButton>
-              </form>
-            </article>
-          ))}
-        </section>
-      )}
+      <MenuList items={items} />
 
       <section className="rounded-card bg-surface p-6 shadow-sm">
         <h2 className="mb-4 text-lg text-foreground">自己新增一個</h2>
