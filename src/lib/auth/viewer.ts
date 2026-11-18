@@ -15,7 +15,7 @@ export async function getViewer() {
 
   const { data: me } = await supabase
     .from("profiles")
-    .select("id, nickname, couple_id, credit_limit, couples(id, invite_code, invite_expires_at, paired_at)")
+    .select("id, nickname, couple_id, credit_limit, couples(id, invite_code, invite_expires_at, paired_at, timezone, daily_allowance)")
     .eq("id", userId)
     .maybeSingle();
   const couple = me?.couples ?? null;

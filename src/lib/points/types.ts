@@ -39,7 +39,8 @@ export type ErrorCode =
   | "INSUFFICIENT_BALANCE"
   | "INVALID_AMOUNT"
   | "ALREADY_PENDING"
-  | "LIMIT_TOO_HIGH";
+  | "LIMIT_TOO_HIGH"
+  | "GIFT_LIMIT";
 
 /** 操作者:使用者(以 id 識別)或系統(touch_couple 的自動確認) */
 export type Actor = { type: "user"; id: string } | { type: "system" };

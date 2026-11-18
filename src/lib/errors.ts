@@ -1,3 +1,4 @@
+import { GIFT_COOLDOWN_DAYS, MAX_GIFT_AMOUNT } from "@/lib/config";
 import type { ErrorCode } from "@/lib/points/types";
 
 /** 錯誤代碼(SPEC 第 8 節)對應的溫暖訊息。用語見 CLAUDE.md 用語表。 */
@@ -13,6 +14,7 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   INVALID_AMOUNT: "數字要是大於 0 的整數喔",
   ALREADY_PENDING: "已經有一筆在等回覆了",
   LIMIT_TOO_HIGH: "這個額度有點太高了,調低一點吧",
+  GIFT_LIMIT: `佛心送愛心每次最多 ${MAX_GIFT_AMOUNT} 顆,而且 ${GIFT_COOLDOWN_DAYS} 天只能送一次喔`,
 };
 
 export const GENERIC_ERROR = "發生了一點小問題,再試一次吧";

@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 // 不需要任何登入憑證的流程。兩個真實帳號配對的完整流程需要 LINE 登入,見 docs/TASKS.md T4 備註。
 test.describe("登入保護與 LINE 登入入口", () => {
   test("未登入開首頁或配對頁,會被帶到登入頁", async ({ page }) => {
-    for (const path of ["/", "/pair", "/menu", "/partner", "/orders", "/orders/11111111-1111-4111-8111-111111111111"]) {
+    for (const path of ["/", "/pair", "/menu", "/partner", "/orders", "/settings", "/orders/11111111-1111-4111-8111-111111111111"]) {
       await page.goto(path);
       await expect(page).toHaveURL(/\/login$/);
     }

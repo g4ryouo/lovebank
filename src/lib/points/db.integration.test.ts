@@ -204,4 +204,17 @@ describe.skipIf(!URL)("資料庫同時執行(整合測試)", { timeout: 60_000 }
     expect(await scalar(`select count(*) from public.ledger where user_id in ('${a}', '${b}') and reason = 'initial'`)).toBe("2");
     expect(await scalar(`select count(*) from public.couples where invite_code in ('${codeA}', '${codeB}')`)).toBe("1");
   });
+
+  it("同一個人同時送兩次禮:只成立一次,另一次 GIFT_LIMIT", async () => {
+    const { g, r } = await setup(); // r 餘額 1000
+    const a = psql(session(r, `select public.send_gift(100);`, 1.2));
+    await sleep(400);
+    const b = await psql(session(r, `select public.send_gift(100);`));
+    const aRes = await a;
+    const results = [aRes, b];
+    expect(results.filter((x) => x.code === 0)).toHaveLength(1);
+    expect(results.find((x) => x.code !== 0)?.err).toContain("GIFT_LIMIT");
+    expect(await scalar(`select count(*) from public.ledger where reason = 'gift' and user_id in ('${g}', '${r}')`)).toBe("2");
+    expect(await scalar(`select sum(delta) from public.ledger where reason = 'gift' and user_id in ('${g}', '${r}')`)).toBe("0");
+  });
 });

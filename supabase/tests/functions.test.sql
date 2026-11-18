@@ -266,6 +266,11 @@ select lives_ok($$select public.respond_order(pg_temp.o('gr'), true)$$, 'r 接�
 reset role;
 create temp table gb as select public._balance(pg_temp.r()) as bal, public._reserved(pg_temp.r()) as res;
 grant all on gb to public;
+-- 贈送上限 2000:把 r 可贈送的額度(balance − reserved)壓到 1500,以便測試「不可超過 balance − reserved」
+insert into public.ledger (couple_id, user_id, delta, reason, group_id, note)
+  select pg_temp.cA(), pg_temp.r(), -(bal - res - 1500), 'adjustment', gen_random_uuid(), '測試:調整可贈送額度' from gb;
+delete from gb;
+insert into gb select public._balance(pg_temp.r()), public._reserved(pg_temp.r());
 select ok((select res from gb) = 999, 'r 預留 999');
 select pg_temp.as_user(pg_temp.r());
 select throws_ok($$select public.send_gift(0)$$, 'P0001', 'INVALID_AMOUNT', '金額 0 → INVALID_AMOUNT');

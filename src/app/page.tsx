@@ -7,18 +7,22 @@ import { closestWishes } from "@/lib/points/wishes";
 import { getWallet } from "@/lib/wallet";
 import { touchCouple } from "@/lib/touch";
 import { groupOf } from "@/lib/orders/labels";
+import { localDateKey } from "@/lib/points/allowance";
 import { AutoRefresh } from "@/components/AutoRefresh";
 import { WishBar } from "@/components/WishBar";
 
 // 登入狀態因人而異,整頁都是動態內容:暫不要求即時顯示(T13 再以 Suspense 與骨架畫面優化)
 export const instant = false;
 
+/** 當地「今天」的日期(獨立成函式,讓頁面元件保持純粹) */
+const todayKey = (timeZone: string) => localDateKey(new Date(), timeZone);
+
 export default async function Home() {
   const { supabase, user, me, couple } = await getViewer();
   if (!me || !couple?.paired_at) redirect("/pair");
 
   await touchCouple(supabase); // 補發零用愛心、自動確認、標記過期;要先做,下面查到的才是最新的
-  const [wallet, theirItems, openOrders] = await Promise.all([
+  const [wallet, theirItems, openOrders, todayAllowance] = await Promise.all([
     getWallet(supabase, me.credit_limit),
     // RLS:對方的項目只讀得到啟用中的
     supabase.from("menu_items").select("id, title, emoji, price").neq("owner_id", user.id),
@@ -26,6 +30,8 @@ export default async function Home() {
       .from("orders")
       .select("id, status, giver_id, receiver_id, initiated_by, price_snapshot, settled_amount")
       .in("status", ["requested", "accepted", "done_by_giver"]),
+    // 只讀得到自己的帳本:今天(依情侶時區)的零用愛心有沒有入帳
+    supabase.from("ledger").select("id").eq("reason", "allowance").eq("period_key", todayKey(couple.timezone)).maybeSingle(),
   ]);
   const wishes = closestWishes(theirItems.data ?? [], wallet.balance, 3);
   const open = openOrders.data ?? [];
@@ -40,6 +46,7 @@ export default async function Home() {
         <p className="mt-3 text-muted">嗨,{me.nickname}!你們已經配對成功囉</p>
         <p className="mt-6 text-sm text-muted">我的愛心</p>
         <p className="text-5xl text-primary-strong">{wallet.balance}</p>
+        {todayAllowance.data && <p className="mt-3 text-sm text-muted">今天的零用愛心 +{couple.daily_allowance} 已經入帳囉 ✓</p>}
       </div>
 
       {wishes.length > 0 && (
@@ -86,6 +93,12 @@ export default async function Home() {
         className="w-full rounded-full bg-surface px-6 py-4 text-lg text-primary-strong shadow-md transition active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100"
       >
         我的愛的菜單
+      </Link>
+      <Link
+        href="/settings"
+        className="w-full rounded-full bg-surface px-6 py-4 text-lg text-primary-strong shadow-md transition active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100"
+      >
+        送愛心給他 🎁
       </Link>
       <form action={signOutAction}>
         <button type="submit" className="text-sm text-muted underline">
