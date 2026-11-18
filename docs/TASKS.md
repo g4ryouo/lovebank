@@ -184,7 +184,7 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 
 ---
 
-## [ ] T11 服務提案、AI 審查、還價
+## [~] T11 服務提案、AI 審查、還價
 
 - 檔案:`migrations/0007_proposals.sql`、`src/lib/ai/review.ts`、`app/api/proposals/**`、`/proposals` 頁。
 - AI:Anthropic API,僅伺服器端;zod 驗證回傳;失敗 → `unavailable`;每日次數上限。
@@ -192,6 +192,16 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 - 測試:AI client 以 mock 測試(成功、格式錯誤、逾時);函式層測試狀態流程與權限。
 
 **驗收**:同意與還價後菜單項目價格正確;還價第二次被拒;送給 AI 的 payload 只含名稱、圖示、價格與經濟參數。
+
+**加入範圍(經使用者決定)**:**愛愛小幫手**(`/help`、`/api/support`、`src/lib/ai/support.ts`、`src/lib/support/knowledge.ts`):只回答愛愛銀行的玩法與規則,每人每天 30 則,只送對話內容。**AI 使用次數**以新資料表 `ai_usage`(只記誰、哪一種、何時,只能新增)計次,審查每人每天 20 次。
+
+**進度備註**:
+- 資料庫 `0012_proposals_and_ai_usage.sql`:`internal_reserve_ai_call`、`internal_create_proposal`、`internal_set_counter_review`(還價只能一次)、`respond_proposal`(同意/婉拒;還價走伺服器 route)、`decide_counter`、`withdraw_proposal`;成立時在擁有者菜單建立項目(價格 = 同意或還價後的價格)。pgTAP 82 項。
+- 伺服器:`/api/proposals`、`/api/proposals/[id]/counter`、`/api/support`(先確認 session、再用 admin client 呼叫 internal 函式;請求必須是同源 JSON)。
+- AI:以強制工具呼叫取得結構化輸出,zod 驗證,失敗一律 `unavailable`;已用真實 API 實測(含提示注入與離題)。
+- 畫面:`/proposals`(提案、AI 意見、同意/婉拒/還價/撤回)、`/help`(聊天)、首頁入口與提醒。
+- 測試:AI 模擬(成功、格式錯誤、逾時、HTTP 錯誤、沒金鑰)、payload 隱私、handler 邏輯、並發(同意與婉拒同時、25 個呼叫搶 20 次額度)、API 沒登入回 401。
+- **待辦(需要使用者)**:(1) 在 Supabase 執行 0012;(2) 在 Vercel 設定環境變數 `ANTHROPIC_API_KEY`、`AI_MODEL`、`SUPABASE_SERVICE_ROLE_KEY`(皆**不可**加 `NEXT_PUBLIC_`);(3) 兩支手機實測。
 
 ---
 

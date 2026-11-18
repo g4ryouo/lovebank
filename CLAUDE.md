@@ -53,7 +53,7 @@ pnpm db:types       # 產生 src/types/database.ts
 10. 資料庫函式一律使用 `auth.uid()` 取得操作者,**不接受由 client 傳入的使用者 id**。
 11. `SUPABASE_SERVICE_ROLE_KEY` 與 `ANTHROPIC_API_KEY` 只能出現在伺服器端程式碼,
     不得進入 client bundle、不得加 `NEXT_PUBLIC_` 前綴。
-12. 送給 AI 的內容只有「提案的名稱、圖示、價格」,不含任何使用者身分或其他資料。
+12. 送給 AI 的內容:服務提案審查**只有**「名稱、圖示、價格」(加兩個經濟參數);愛愛小幫手**只有**使用者輸入的問題與這次對話。兩者都不含任何使用者身分(暱稱、id)、愛心數量、帳本或對方資料。
 
 ## 程式風格
 
@@ -76,7 +76,8 @@ src/
     supabase/           # client.ts / server.ts / admin.ts(admin 僅伺服器端)
     points/             # 純函式:餘額、額度、狀態轉換、分錄、零用點數
     menu/templates.ts   # 預設菜單範本
-    ai/review.ts        # AI 審查(伺服器端)
+    ai/                 # AI(伺服器端):client.ts(fetch)、review.ts(提案審查)、support.ts(愛愛小幫手)
+    support/knowledge.ts # 愛愛小幫手的知識庫(引用 config 數字)
   types/database.ts     # 由 supabase gen types 產生,不手改
 supabase/
   config.toml

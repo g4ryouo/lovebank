@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 // 不需要任何登入憑證的流程。兩個真實帳號配對的完整流程需要 LINE 登入,見 docs/TASKS.md T4 備註。
 test.describe("登入保護與 LINE 登入入口", () => {
   test("未登入開首頁或配對頁,會被帶到登入頁", async ({ page }) => {
-    for (const path of ["/", "/pair", "/menu", "/partner", "/orders", "/settings", "/orders/11111111-1111-4111-8111-111111111111"]) {
+    for (const path of ["/", "/pair", "/menu", "/partner", "/orders", "/settings", "/proposals", "/help", "/orders/11111111-1111-4111-8111-111111111111"]) {
       await page.goto(path);
       await expect(page).toHaveURL(/\/login$/);
     }
@@ -35,5 +35,13 @@ test.describe("登入保護與 LINE 登入入口", () => {
   test("next 參數不能導去外部網站", async ({ page }) => {
     await page.goto("/auth/callback?next=https://evil.example");
     await expect(page).toHaveURL(/localhost:3000\/login/);
+  });
+
+  test("API:沒登入不能用小幫手與提案", async ({ request }) => {
+    for (const url of ["/api/support", "/api/proposals", "/api/proposals/11111111-1111-4111-8111-111111111111/counter"]) {
+      const res = await request.post(url, { data: { messages: [{ role: "user", content: "hi" }] } });
+      expect(res.status()).toBe(401);
+      expect((await res.json()).error).toBe("請先登入喔");
+    }
   });
 });

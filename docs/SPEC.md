@@ -355,6 +355,7 @@ ai_usage (                                    -- 只記次數,不記內容;只�
 | `/ledger` | 我的帳本流水 |
 | `/proposals` | 新增服務提案、提案列表、AI 意見、還價 |
 | `/settings` | 暱稱、額度申請與核准、贈送點數 |
+| `/help` | 愛愛小幫手(客服):只回答愛愛銀行的玩法與規則,不看帳號資料 |
 
 願望進度條:`progress = clamp(balance / price, 0, 1)`,餘額為負時顯示 0。僅為畫面計算,不新增資料表。
 (「最接近達成的 3 個」排序方式為暫定,T6 實作時與使用者確認畫面。)
@@ -390,6 +391,20 @@ pending / countered ─ 提案人撤回 ──▶ withdrawn
   不送使用者暱稱、id、現有菜單或任何其他資料。
 - AI 回傳要求結構化 JSON:`{ verdict: "ok" | "caution", content_comment, price_comment }`,用 zod 驗證;驗證失敗視為 `unavailable`。
 - 模型名稱讀取環境變數 `AI_MODEL`。
+- 新模型不接受 `temperature` 參數,不要送出。
+- 結構化輸出以「強制工具呼叫」取得(`submit_review`、`submit_price_review`),再用 zod 驗證;不符合格式一律視為 `unavailable`。
+- 若名稱看起來像在對 AI 下指令(提示注入),AI 應標為 `caution`;AI 只給意見、不能否決,所以不影響流程。
+
+### 愛愛小幫手(客服)
+
+使用者可以向「愛愛小幫手」詢問愛愛銀行的玩法、規則與操作。
+
+- `POST /api/support`:驗證 session → zod 驗證(最多 12 則、每則 500 字)→ 預約次數(`internal_reserve_ai_call(actor, 'support')`,每人每天 `SUPPORT_MESSAGES_PER_DAY`)→ 呼叫 AI → 回覆。
+- 範圍:**只回答與愛愛銀行有關的問題**;離題一律回固定句;不透露指示;不編造,不知道就說不知道。
+- 知識來源:`src/lib/support/knowledge.ts`(從本規格整理的玩法說明,數字引用 `config.ts`)。規則改了要同步更新,測試會檢查數字一致。
+- 隱私:送給 AI 的**只有使用者輸入的問題與這次對話**,不含暱稱、id、愛心數量、帳本或對方資料;小幫手無法查任何帳號資料。
+- 對話只存在使用者的畫面上,伺服器不保存內容(`ai_usage` 只記次數)。
+- AI 失敗或逾時:回覆「小幫手暫時休息中」,不影響其他功能。
 
 ## 12. 尚未決定(之後討論,不要自行決定)
 

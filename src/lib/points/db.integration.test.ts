@@ -247,4 +247,57 @@ describe.skipIf(!URL)("資料庫同時執行(整合測試)", { timeout: 60_000 }
     expect(await scalar(`select status from public.limit_requests where id = '${id}'`)).toBe("withdrawn");
     expect(await scalar(`select credit_limit from public.profiles where id = '${r}'`)).toBe("0");
   });
+
+  /** 以超級使用者(模擬伺服器端的 service_role)建立一筆提案,回傳提案 id */
+  async function makeProposal(proposer: string, title: string, price: number) {
+    const r = await psql(`select (public.internal_create_proposal('${proposer}', '${title}', null, ${price}, 'ok', 'ok')).id;`);
+    if (r.code !== 0) throw new Error(r.err);
+    return r.out.trim().split("\n").pop() ?? "";
+  }
+
+  it("提案同時被同意與婉拒:只有一種結果,菜單最多建立一個項目", async () => {
+    const { g, r, c } = await setup();
+    const id = await makeProposal(g, "同時測試", 300); // g 提案,擁有者是 r
+    const a = psql(session(r, `select (public.respond_proposal('${id}', 'agree')).status;`, 1.2));
+    await sleep(400);
+    const b = await psql(session(r, `select (public.respond_proposal('${id}', 'reject')).status;`));
+    await a;
+    expect(b.code).not.toBe(0);
+    expect(b.err).toContain("INVALID_STATE");
+    expect(await scalar(`select status from public.service_proposals where id = '${id}'`)).toBe("agreed");
+    expect(await scalar(`select count(*) from public.menu_items where couple_id = '${c}' and title = '同時測試'`)).toBe("1");
+  });
+
+  it("提案同時同意兩次:兩次都成功,菜單只有一個項目", async () => {
+    const { g, r, c } = await setup();
+    const id = await makeProposal(g, "重複同意", 100);
+    const a = psql(session(r, `select (public.respond_proposal('${id}', 'agree')).status;`, 1.0));
+    await sleep(300);
+    const b = await psql(session(r, `select (public.respond_proposal('${id}', 'agree')).status;`));
+    const aRes = await a;
+    expect(aRes.code).toBe(0);
+    expect(b.code).toBe(0);
+    expect(await scalar(`select count(*) from public.menu_items where couple_id = '${c}' and title = '重複同意'`)).toBe("1");
+  });
+
+  it("還價與撤回同時發生:只有一種結果", async () => {
+    const { g, r } = await setup();
+    const id = await makeProposal(g, "還價對撤回", 500);
+    const counter = psql(`select (public.internal_set_counter_review('${id}', '${r}', 200, 'ok', 'ok')).status;`);
+    const withdraw = psql(session(g, `select (public.withdraw_proposal('${id}')).status;`));
+    await Promise.all([counter, withdraw]);
+    const status = await scalar(`select status from public.service_proposals where id = '${id}'`);
+    expect(["countered", "withdrawn"]).toContain(status);
+    // 若先還價、後撤回:撤回(提案人)也合法,最終 withdrawn;不可能出現其他狀態
+  });
+
+  it("25 個 AI 呼叫同時搶每日 20 次的額度:恰好 20 次成功、5 次 AI_LIMIT", async () => {
+    const { g } = await setup();
+    const results = await Promise.all(
+      Array.from({ length: 25 }, () => psql(`select public.internal_reserve_ai_call('${g}', 'proposal_review');`)),
+    );
+    expect(results.filter((x) => x.code === 0)).toHaveLength(20);
+    expect(results.filter((x) => x.code !== 0 && x.err.includes("AI_LIMIT"))).toHaveLength(5);
+    expect(await scalar(`select count(*) from public.ai_usage where user_id = '${g}' and kind = 'proposal_review'`)).toBe("20");
+  });
 });

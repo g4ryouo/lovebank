@@ -39,6 +39,10 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isPublic = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
+  // API 沒登入:直接回 401(不是導去登入頁的網頁)
+  if (!signedIn && pathname.startsWith("/api/")) {
+    return NextResponse.json({ error: "請先登入喔" }, { status: 401 });
+  }
   if (!signedIn && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
