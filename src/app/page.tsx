@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { APP_NAME } from "@/lib/config";
 import { getViewer } from "@/lib/auth/viewer";
@@ -20,6 +21,12 @@ export default async function Home() {
         <p className="mt-6 text-sm text-muted">我的愛心</p>
         <p className="text-5xl text-primary-strong">{balance?.balance ?? 0}</p>
       </div>
+      <Link
+        href="/menu"
+        className="w-full max-w-sm rounded-full bg-primary-strong px-6 py-4 text-lg text-white shadow-md transition active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100"
+      >
+        我的愛的菜單
+      </Link>
       <form action={signOutAction}>
         <button type="submit" className="text-sm text-muted underline">
           登出

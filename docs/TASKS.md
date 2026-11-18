@@ -112,13 +112,16 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 
 ---
 
-## [ ] T5 我的愛心菜單與範本
+## [~] T5 我的愛心菜單與範本
 
 - `/menu`:新增、編輯、停用、價格 0 到 100000、emoji。
-- `src/lib/menu/templates.ts`:開車接送、親親、抱抱、按摩,一鍵套用。
+- `src/lib/menu/templates.ts`:親親 💋 100、抱抱 🤗 200、按摩 💆 600、開車接送 🚗 400,一鍵套用。
+- 對方只讀得到 `active` 的項目(RLS,見 `0008_menu_visibility.sql`)。
 - 以 RLS 直接寫入;pgTAP 驗證只能改自己的項目。
 
 **驗收**:菜單 CRUD 可用;對方看不到我的停用項目;改價不影響既有訂單(T7 後再驗)。
+
+**進度備註**:`0008_menu_visibility.sql`、`menu.test.sql`(pgTAP 26 項,含對方看不到停用項目、不能改我的菜單、沒有 DELETE)、`/menu` 頁(新增、修改、暫停與恢復、範本一鍵加入)、`templates.ts`、zod 驗證與測試已完成,`/menu` 已納入登入保護測試。**待辦**:在 Supabase 執行 0008,並用手機實測畫面後改為 `[x]`。
 
 ---
 
@@ -146,7 +149,7 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 
 ## [ ] T8 贈送點數
 
-- `/settings` 的贈送功能,呼叫 `send_gift`;不可超過 `balance − reserved`。
+- `/settings` 的贈送功能,呼叫 `send_gift`;不可超過 `balance − reserved`,**且單次不可超過 `MAX_GIFT_AMOUNT`(2000)**(資料庫函式與 `_cfg` 同步,需新 migration)。
 
 **驗收**:兩筆分錄加總為 0;超額被擋;金額必須為正整數。
 

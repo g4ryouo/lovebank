@@ -42,6 +42,7 @@
 | `AUTO_CONFIRM_HOURS` | 24 | 「做完了」之後自動確認的時限 |
 | `REQUEST_EXPIRE_DAYS` | 3 | `requested` 訂單未回應即自動過期的天數 |
 | `MAX_PRICE` | 100000 | 菜單價格上限 |
+| `MAX_GIFT_AMOUNT` | 2000 | 贈送點數單次上限(避免囤積);是否限制次數待確認 |
 | `DEFAULT_CREDIT_LIMIT` | 0 | 新使用者預設信用額度 |
 | `MAX_CREDIT_LIMIT` | 待定 | 見第 12 節 |
 | `DEFAULT_TIMEZONE` | Asia/Taipei | 零用點數的日期邊界 |
@@ -83,7 +84,7 @@ available(u) = balance(u) + credit_limit(u) − reserved(u)
 - 接受訂單的條件(權威檢查):`available(receiver) ≥ price_snapshot`。
 - 完成訂單時**不再檢查額度**(已在接受時預留),避免訂單卡死。
 - 調低信用額度只影響之後的新接受,不追溯既有訂單。
-- 贈送點數:`balance(sender) − reserved(sender) ≥ amount`,**不可使用信用額度**(暫定,見第 12 節)。
+- 贈送點數:`balance(sender) − reserved(sender) ≥ amount`,**不可使用信用額度**(暫定,見第 12 節);且**單次 `amount ≤ MAX_GIFT_AMOUNT`**。
 
 ### 5.2 帳本 (ledger)
 
@@ -323,7 +324,7 @@ service_proposals (
 | --- | --- | --- |
 | couples | 成員 | 無(僅函式) |
 | profiles | 同情侶成員 | 僅 `nickname` 可由本人 UPDATE(欄位層級授權);`credit_limit` 只能經函式 |
-| menu_items | 同情侶成員 | 擁有者可 INSERT / UPDATE 自己的項目(`owner_id = auth.uid()`);不提供 DELETE |
+| menu_items | 擁有者讀全部;對方只讀 `active = true` 的項目 | 擁有者可 INSERT / UPDATE 自己的項目(`owner_id = auth.uid()`);不提供 DELETE |
 | orders | 同情侶成員 | 無(僅函式) |
 | ledger | **只有本人的列**(`user_id = auth.uid()`) | 無;並有 trigger 禁止 UPDATE / DELETE |
 | limit_requests | 同情侶成員 | 無(僅函式) |
@@ -349,7 +350,7 @@ service_proposals (
 願望進度條:`progress = clamp(balance / price, 0, 1)`,餘額為負時顯示 0。僅為畫面計算,不新增資料表。
 (「最接近達成的 3 個」排序方式為暫定,T6 實作時與使用者確認畫面。)
 
-預設範本(`src/lib/menu/templates.ts`):開車接送、親親、抱抱、按摩。使用者可自行調整價格(可為 0)。
+預設範本(`src/lib/menu/templates.ts`):親親 💋 100、抱抱 🤗 200、按摩 💆 600、開車接送 🚗 400。使用者可自行調整價格(可為 0)。
 
 ## 11. 服務提案與 AI 審查
 
