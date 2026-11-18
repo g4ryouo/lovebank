@@ -241,10 +241,15 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 
 ---
 
-## [ ] T14 部署與實際使用測試
+## [~] T14 部署與實際使用測試
 
 - Vercel 部署;環境變數;Supabase 正式專案與 migration;LINE Login 正式 redirect。
 - 兩支真機實際使用一週,記錄手感問題。
 - 檢查:service role 與 AI 金鑰未進入 client bundle。
 
 **驗收**:兩人能在正式環境完成配對與一輪完整流程。
+
+**進度備註**:
+- 已完成:Vercel 部署(`https://lovebank-eight.vercel.app`)、Supabase 正式專案與 migration 0001–0013、LINE Login 與 LIFF、環境變數、愛愛小幫手與 AI 審查在正式環境實測通過、**金鑰安全檢查**(建置後給瀏覽器的檔案不含任何金鑰字樣,Anthropic 與 service role 金鑰不在 git)。
+- **實測清單**:`docs/TEST-CHECKLIST.md`(12 個區塊 + 一週使用記錄表)。
+- **待辦(使用者)**:照清單用兩支手機走一輪;撤銷先前貼在聊天裡的 Anthropic 金鑰並設花費上限;一週實際使用並記錄手感問題。完成後將 T14 改為 `[x]`,並視記錄整理改善清單。
