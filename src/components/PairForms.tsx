@@ -24,7 +24,7 @@ export function CreateCoupleForm({ suggestedNickname }: { suggestedNickname: str
       <label className="text-sm text-muted" htmlFor="create-nickname">
         你的暱稱
       </label>
-      <input id="create-nickname" name="nickname" defaultValue={suggestedNickname} maxLength={20} required className={inputClass} placeholder="例如:小明" />
+      <input id="create-nickname" name="nickname" defaultValue={state.values?.nickname ?? suggestedNickname} maxLength={20} required className={inputClass} placeholder="例如:小明" />
       <ErrorText message={state.error} />
       <SubmitButton pendingText="正在準備邀請碼…">建立我們這一對</SubmitButton>
     </form>
@@ -41,6 +41,7 @@ export function JoinCoupleForm({ suggestedNickname }: { suggestedNickname: strin
       <input
         id="join-code"
         name="code"
+        defaultValue={state.values?.code ?? ""}
         required
         maxLength={12}
         autoCapitalize="characters"
@@ -51,7 +52,7 @@ export function JoinCoupleForm({ suggestedNickname }: { suggestedNickname: strin
       <label className="text-sm text-muted" htmlFor="join-nickname">
         你的暱稱
       </label>
-      <input id="join-nickname" name="nickname" defaultValue={suggestedNickname} maxLength={20} required className={inputClass} placeholder="例如:小美" />
+      <input id="join-nickname" name="nickname" defaultValue={state.values?.nickname ?? suggestedNickname} maxLength={20} required className={inputClass} placeholder="例如:小美" />
       <ErrorText message={state.error} />
       <SubmitButton pendingText="正在加入…">加入對方的一對</SubmitButton>
     </form>
