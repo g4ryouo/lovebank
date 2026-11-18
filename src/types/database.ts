@@ -191,9 +191,254 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "current_couple_id":
+            "_available":
+{ Args: { "p_user": string }; Returns: number
+                           },
+"_balance":
+{ Args: { "p_user": string }; Returns: number
+                           },
+"_cfg":
+{ Args: { "p_key": string }; Returns: number
+                           },
+"_lock_order":
+{ Args: { "p_order_id": string }; Returns: {
+              "accepted_at": string | null,
+"auto_confirm_at": string | null,
+"completed_at": string | null,
+"couple_id": string,
+"created_at": string,
+"done_at": string | null,
+"emoji_snapshot": string | null,
+"expires_at": string | null,
+"giver_id": string,
+"id": string,
+"initiated_by": string,
+"menu_item_id": string,
+"note": string | null,
+"price_snapshot": number,
+"receiver_id": string,
+"settled_amount": number | null,
+"status": Database["public"]['Enums']["order_status"],
+"title_snapshot": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "orders"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"_reserved":
+{ Args: { "p_user": string }; Returns: number
+                           },
+"_settle_order":
+{ Args: { "p_amount": number,"p_order": Omit<Database["public"]['Tables']["orders"]['Row'], Database["public"]['Tables']["orders"]['ComputedFields']> }; Returns: {
+              "accepted_at": string | null,
+"auto_confirm_at": string | null,
+"completed_at": string | null,
+"couple_id": string,
+"created_at": string,
+"done_at": string | null,
+"emoji_snapshot": string | null,
+"expires_at": string | null,
+"giver_id": string,
+"id": string,
+"initiated_by": string,
+"menu_item_id": string,
+"note": string | null,
+"price_snapshot": number,
+"receiver_id": string,
+"settled_amount": number | null,
+"status": Database["public"]['Enums']["order_status"],
+"title_snapshot": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "orders"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"_touch_couple_at":
+{ Args: { "p_couple": string,"p_now": string }; Returns: Json
+                           },
+"cancel_order":
+{ Args: { "p_order_id": string }; Returns: {
+              "accepted_at": string | null,
+"auto_confirm_at": string | null,
+"completed_at": string | null,
+"couple_id": string,
+"created_at": string,
+"done_at": string | null,
+"emoji_snapshot": string | null,
+"expires_at": string | null,
+"giver_id": string,
+"id": string,
+"initiated_by": string,
+"menu_item_id": string,
+"note": string | null,
+"price_snapshot": number,
+"receiver_id": string,
+"settled_amount": number | null,
+"status": Database["public"]['Enums']["order_status"],
+"title_snapshot": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "orders"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"confirm_order":
+{ Args: { "p_order_id": string }; Returns: {
+              "accepted_at": string | null,
+"auto_confirm_at": string | null,
+"completed_at": string | null,
+"couple_id": string,
+"created_at": string,
+"done_at": string | null,
+"emoji_snapshot": string | null,
+"expires_at": string | null,
+"giver_id": string,
+"id": string,
+"initiated_by": string,
+"menu_item_id": string,
+"note": string | null,
+"price_snapshot": number,
+"receiver_id": string,
+"settled_amount": number | null,
+"status": Database["public"]['Enums']["order_status"],
+"title_snapshot": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "orders"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"create_order":
+{ Args: { "p_menu_item_id": string,"p_note"?: string }; Returns: {
+              "accepted_at": string | null,
+"auto_confirm_at": string | null,
+"completed_at": string | null,
+"couple_id": string,
+"created_at": string,
+"done_at": string | null,
+"emoji_snapshot": string | null,
+"expires_at": string | null,
+"giver_id": string,
+"id": string,
+"initiated_by": string,
+"menu_item_id": string,
+"note": string | null,
+"price_snapshot": number,
+"receiver_id": string,
+"settled_amount": number | null,
+"status": Database["public"]['Enums']["order_status"],
+"title_snapshot": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "orders"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"current_couple_id":
 { Args: Record<PropertyKey, never>; Returns: string
-                           }
+                           },
+"mark_done":
+{ Args: { "p_order_id": string }; Returns: {
+              "accepted_at": string | null,
+"auto_confirm_at": string | null,
+"completed_at": string | null,
+"couple_id": string,
+"created_at": string,
+"done_at": string | null,
+"emoji_snapshot": string | null,
+"expires_at": string | null,
+"giver_id": string,
+"id": string,
+"initiated_by": string,
+"menu_item_id": string,
+"note": string | null,
+"price_snapshot": number,
+"receiver_id": string,
+"settled_amount": number | null,
+"status": Database["public"]['Enums']["order_status"],
+"title_snapshot": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "orders"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"respond_order":
+{ Args: { "p_accept": boolean,"p_order_id": string }; Returns: {
+              "accepted_at": string | null,
+"auto_confirm_at": string | null,
+"completed_at": string | null,
+"couple_id": string,
+"created_at": string,
+"done_at": string | null,
+"emoji_snapshot": string | null,
+"expires_at": string | null,
+"giver_id": string,
+"id": string,
+"initiated_by": string,
+"menu_item_id": string,
+"note": string | null,
+"price_snapshot": number,
+"receiver_id": string,
+"settled_amount": number | null,
+"status": Database["public"]['Enums']["order_status"],
+"title_snapshot": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "orders"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"send_gift":
+{ Args: { "p_amount": number,"p_note"?: string }; Returns: string
+                           },
+"touch_couple":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"waive_order":
+{ Args: { "p_order_id": string }; Returns: {
+              "accepted_at": string | null,
+"auto_confirm_at": string | null,
+"completed_at": string | null,
+"couple_id": string,
+"created_at": string,
+"done_at": string | null,
+"emoji_snapshot": string | null,
+"expires_at": string | null,
+"giver_id": string,
+"id": string,
+"initiated_by": string,
+"menu_item_id": string,
+"note": string | null,
+"price_snapshot": number,
+"receiver_id": string,
+"settled_amount": number | null,
+"status": Database["public"]['Enums']["order_status"],
+"title_snapshot": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "orders"
+        isOneToOne: true
+        isSetofReturn: false
+      } }
           }
           Enums: {
             "ai_verdict": "ok"|"caution"|"unavailable","ledger_reason": "initial"|"allowance"|"order"|"gift"|"adjustment","limit_request_status": "pending"|"approved"|"declined","order_status": "requested"|"accepted"|"done_by_giver"|"completed"|"declined"|"cancelled"|"expired","proposal_status": "pending"|"countered"|"agreed"|"rejected"|"withdrawn"

@@ -71,7 +71,7 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 
 ---
 
-## [ ] T3b 資料庫函式與整合測試
+## [~] T3b 資料庫函式與整合測試
 
 **檔案**
 1. `migrations/0004_functions_core.sql`:`create_order`、`respond_order`、`cancel_order`、`mark_done`、`confirm_order`、`waive_order`。
@@ -84,6 +84,8 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 - 自動確認:`now() >= auto_confirm_at` 才成立,否則 `INVALID_STATE`。
 - 零用點數:起算日為 `paired_at` 當地隔天,只補到當地今天,最近 `ALLOWANCE_CATCH_UP_DAYS` 天內未發者。
 
+**進度備註**:migration 0004、0005,pgTAP(`functions.test.sql`,149 項)與同時執行測試(`db.integration.test.ts`,5 項,以 psql 握住鎖模擬同時連線)都已完成並通過;另有 `config-sync.test.ts` 確保 SQL 常數與 `config.ts` 一致。與 T2 相同,是用本機 PostgreSQL + 模擬層驗證(`pnpm db:test:local`)。**待辦**:在有 Docker 的機器上跑 `pnpm db:reset && pnpm db:test`,再以 `LOVEBANK_TEST_DB_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres pnpm test:integration` 跑同時執行測試,確認後改為 `[x]`。
+
 **驗收(必須)**
 - 同一筆訂單**連續兩次或同時兩次** `confirm_order`:ledger 只有 2 筆,第二次為無副作用的成功。
 - 兩筆訂單合計超過可用額度,同時被接受:恰好一筆成功、一筆 `INSUFFICIENT_CREDIT`。
@@ -91,6 +93,7 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 - 免費訂單不寫 ledger,`settled_amount = 0`。
 - `touch_couple` 連呼叫兩次,零用點數與自動確認只發生一次。
 - 自動確認於 `auto_confirm_at` 之後才發生。
+- 邀請(`requested`)逾 3 天未回應:`touch_couple` 標為 `expired`,不影響點數;逾期後接受、婉拒、取消皆為 `INVALID_STATE`。
 - 所有 `order` / `gift` group 的 ledger 加總為 0。
 
 ---

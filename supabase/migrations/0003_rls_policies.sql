@@ -19,7 +19,7 @@ grant execute on function public.current_couple_id() to authenticated;
 -- 先撤銷全部,再逐項授權(最小權限)。往後新建物件也預設不授權給 client 角色。
 revoke all on all tables in schema public from public, anon, authenticated, service_role;
 alter default privileges in schema public revoke all on tables from anon, authenticated, service_role;
-alter default privileges in schema public revoke all on functions from public, anon;
+alter default privileges in schema public revoke all on functions from public, anon, authenticated, service_role;
 
 grant select on public.couples, public.profiles, public.menu_items, public.orders,
   public.ledger, public.limit_requests, public.service_proposals, public.balances,

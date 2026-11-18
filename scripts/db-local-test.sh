@@ -26,3 +26,7 @@ for f in supabase/migrations/*.sql; do
 done
 [ -f supabase/seed.sql ] && psql -qX -v ON_ERROR_STOP=1 -f supabase/seed.sql
 pg_prove -v supabase/tests/*.test.sql
+
+# 同時執行的整合測試(連本機 PostgreSQL)
+LOVEBANK_TEST_DB_URL="postgresql://postgres@/$PGDATABASE?host=$PGHOST&port=$PGPORT" \
+  npx vitest run src/lib/points/db.integration.test.ts

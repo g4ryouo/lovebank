@@ -13,7 +13,8 @@
     "db:reset": "npx supabase db reset",
     "db:test": "npx supabase test db",
     "db:types": "npx supabase gen types typescript --local > src/types/database.ts",
-    "db:test:local": "scripts/db-local-test.sh"
+    "db:test:local": "scripts/db-local-test.sh",
+    "test:integration": "vitest run src/lib/points/db.integration.test.ts"
   },
   "dependencies": {
     "next": "16.4.6",
