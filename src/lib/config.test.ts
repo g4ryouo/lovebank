@@ -10,6 +10,8 @@ describe("config", () => {
     expect(config.MAX_GIFT_AMOUNT).toBe(2000);
     expect(config.GIFT_COOLDOWN_DAYS).toBe(7);
     expect(config.MAX_CREDIT_LIMIT).toBe(2000);
+    expect(config.AI_REVIEWS_PER_DAY).toBe(20);
+    expect(config.SUPPORT_MESSAGES_PER_DAY).toBe(30);
     expect(config.DEFAULT_CREDIT_LIMIT).toBe(0);
     expect(config.DEFAULT_TIMEZONE).toBe("Asia/Taipei");
   });

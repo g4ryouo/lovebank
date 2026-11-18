@@ -14,6 +14,7 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   INVALID_AMOUNT: "數字要是大於 0 的整數喔",
   ALREADY_PENDING: "已經有一筆在等回覆了",
   LIMIT_TOO_HIGH: "這個額度有點太高了,調低一點吧",
+  AI_LIMIT: "今天問得有點多囉,明天再來找我吧 💙",
   GIFT_LIMIT: `佛心送愛心每次最多 ${MAX_GIFT_AMOUNT} 顆,而且 ${GIFT_COOLDOWN_DAYS} 天只能送一次喔`,
 };
 

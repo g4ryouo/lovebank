@@ -5,7 +5,39 @@ export type Database = {
   
   "public": {
           Tables: {
-            "couples": {
+            "ai_usage": {
+                  Row: {
+                    "created_at": string,"id": string,"kind": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"kind": string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"kind"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "ai_usage_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "balances"
+      referencedColumns: ["user_id"]
+    },{
+      foreignKeyName: "ai_usage_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "ai_usage_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "reserved"
+      referencedColumns: ["user_id"]
+    }
+                  ]
+                },"couples": {
                   Row: {
                     "created_at": string,"daily_allowance": number,"id": string,"initial_grant": number,"invite_code": string,"invite_expires_at": string,"paired_at": string | null,"timezone": string
                   }
@@ -191,7 +223,33 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "_available":
+            "_agree_proposal":
+{ Args: { "p_price": number,"p_row": Omit<Database["public"]['Tables']["service_proposals"]['Row'], Database["public"]['Tables']["service_proposals"]['ComputedFields']> }; Returns: {
+              "ai_comment": string | null,
+"ai_reviewed_at": string | null,
+"ai_verdict": Database["public"]['Enums']["ai_verdict"] | null,
+"counter_ai_comment": string | null,
+"counter_ai_verdict": Database["public"]['Enums']["ai_verdict"] | null,
+"counter_price": number | null,
+"couple_id": string,
+"created_at": string,
+"emoji": string | null,
+"id": string,
+"menu_item_id": string | null,
+"owner_id": string,
+"price": number,
+"proposer_id": string,
+"status": Database["public"]['Enums']["proposal_status"],
+"title": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "service_proposals"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"_available":
 { Args: { "p_user": string }; Returns: number
                            },
 "_balance":
@@ -369,6 +427,32 @@ isOneToOne: false
 "current_couple_id":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
+"decide_counter":
+{ Args: { "p_accept": boolean,"p_id": string }; Returns: {
+              "ai_comment": string | null,
+"ai_reviewed_at": string | null,
+"ai_verdict": Database["public"]['Enums']["ai_verdict"] | null,
+"counter_ai_comment": string | null,
+"counter_ai_verdict": Database["public"]['Enums']["ai_verdict"] | null,
+"counter_price": number | null,
+"couple_id": string,
+"created_at": string,
+"emoji": string | null,
+"id": string,
+"menu_item_id": string | null,
+"owner_id": string,
+"price": number,
+"proposer_id": string,
+"status": Database["public"]['Enums']["proposal_status"],
+"title": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "service_proposals"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "decide_limit_request":
 { Args: { "p_approve": boolean,"p_request_id": string }; Returns: {
               "couple_id": string,
@@ -384,6 +468,61 @@ isOneToOne: false
                           SetofOptions: {
         from: "*"
         to: "limit_requests"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"internal_create_proposal":
+{ Args: { "p_actor": string,"p_comment": string,"p_emoji": string,"p_price": number,"p_title": string,"p_verdict": Database["public"]['Enums']["ai_verdict"] }; Returns: {
+              "ai_comment": string | null,
+"ai_reviewed_at": string | null,
+"ai_verdict": Database["public"]['Enums']["ai_verdict"] | null,
+"counter_ai_comment": string | null,
+"counter_ai_verdict": Database["public"]['Enums']["ai_verdict"] | null,
+"counter_price": number | null,
+"couple_id": string,
+"created_at": string,
+"emoji": string | null,
+"id": string,
+"menu_item_id": string | null,
+"owner_id": string,
+"price": number,
+"proposer_id": string,
+"status": Database["public"]['Enums']["proposal_status"],
+"title": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "service_proposals"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"internal_reserve_ai_call":
+{ Args: { "p_actor": string,"p_kind": string }; Returns: undefined
+                           },
+"internal_set_counter_review":
+{ Args: { "p_actor": string,"p_comment": string,"p_counter_price": number,"p_id": string,"p_verdict": Database["public"]['Enums']["ai_verdict"] }; Returns: {
+              "ai_comment": string | null,
+"ai_reviewed_at": string | null,
+"ai_verdict": Database["public"]['Enums']["ai_verdict"] | null,
+"counter_ai_comment": string | null,
+"counter_ai_verdict": Database["public"]['Enums']["ai_verdict"] | null,
+"counter_price": number | null,
+"couple_id": string,
+"created_at": string,
+"emoji": string | null,
+"id": string,
+"menu_item_id": string | null,
+"owner_id": string,
+"price": number,
+"proposer_id": string,
+"status": Database["public"]['Enums']["proposal_status"],
+"title": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "service_proposals"
         isOneToOne: true
         isSetofReturn: false
       } },
@@ -478,6 +617,32 @@ isOneToOne: false
         isOneToOne: true
         isSetofReturn: false
       } },
+"respond_proposal":
+{ Args: { "p_action": string,"p_id": string }; Returns: {
+              "ai_comment": string | null,
+"ai_reviewed_at": string | null,
+"ai_verdict": Database["public"]['Enums']["ai_verdict"] | null,
+"counter_ai_comment": string | null,
+"counter_ai_verdict": Database["public"]['Enums']["ai_verdict"] | null,
+"counter_price": number | null,
+"couple_id": string,
+"created_at": string,
+"emoji": string | null,
+"id": string,
+"menu_item_id": string | null,
+"owner_id": string,
+"price": number,
+"proposer_id": string,
+"status": Database["public"]['Enums']["proposal_status"],
+"title": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "service_proposals"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "send_gift":
 { Args: { "p_amount": number,"p_note"?: string }; Returns: string
                            },
@@ -530,6 +695,32 @@ isOneToOne: false
                           SetofOptions: {
         from: "*"
         to: "limit_requests"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"withdraw_proposal":
+{ Args: { "p_id": string }; Returns: {
+              "ai_comment": string | null,
+"ai_reviewed_at": string | null,
+"ai_verdict": Database["public"]['Enums']["ai_verdict"] | null,
+"counter_ai_comment": string | null,
+"counter_ai_verdict": Database["public"]['Enums']["ai_verdict"] | null,
+"counter_price": number | null,
+"couple_id": string,
+"created_at": string,
+"emoji": string | null,
+"id": string,
+"menu_item_id": string | null,
+"owner_id": string,
+"price": number,
+"proposer_id": string,
+"status": Database["public"]['Enums']["proposal_status"],
+"title": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "service_proposals"
         isOneToOne: true
         isSetofReturn: false
       } }

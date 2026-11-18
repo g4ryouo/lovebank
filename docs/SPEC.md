@@ -49,6 +49,7 @@
 | `DEFAULT_TIMEZONE` | Asia/Taipei | 零用點數的日期邊界 |
 | `INVITE_CODE_TTL_DAYS` | 7 | 邀請碼有效天數 |
 | `AI_REVIEWS_PER_DAY` | 20 | 每人每天 AI 審查次數上限 |
+| `SUPPORT_MESSAGES_PER_DAY` | 30 | 每人每天向「愛愛小幫手」提問的次數上限 |
 
 ## 4. 系統架構
 
@@ -285,6 +286,12 @@ service_proposals (
   check (proposer_id <> owner_id)
 )
 
+ai_usage (                                    -- 只記次數,不記內容;只能新增,不開放 client 讀寫
+  id uuid pk, user_id uuid not null references profiles,
+  kind text not null check (kind in ('proposal_review','support')),
+  created_at timestamptz not null default now()
+)
+
 -- view:balances(user_id, balance)、reserved(user_id, reserved)
 ```
 
@@ -307,17 +314,18 @@ service_proposals (
 | `send_gift(amount, note)` | 贈送點數給對方,兩筆分錄 |
 | `set_credit_limit(limit)` | **對方**直接設定我的額度(只能設定別人的) |
 | `request_limit(requested_limit, reason)` / `decide_limit_request(id, approve)` / `withdraw_limit_request(id)` | 額度申請、核准或婉拒(核准者為另一方)、申請人撤回待處理的申請 |
-| `respond_proposal(id, action, counter_price)` | 提案的對方:agree / reject / counter |
+| `respond_proposal(id, action)` | 提案的對方:agree / reject(還價走伺服器 route,先做價格審查) |
 | `decide_counter(id, accept bool)` | 提案人對還價:接受或婉拒 |
 | `withdraw_proposal(id)` | 提案人撤回 |
 | `internal_create_proposal(actor, ..., ai 結果)` | 僅 service role:建立提案並寫入 AI 審查結果 |
-| `internal_set_counter_review(id, actor, ..., ai 結果)` | 僅 service role:還價時寫入價格審查結果 |
+| `internal_set_counter_review(id, actor, counter_price, ai 結果)` | 僅 service role:還價(只能一次)並寫入價格審查結果 |
+| `internal_reserve_ai_call(actor, kind)` | 僅 service role:預約一次 AI 呼叫並記次數,超過每日上限回 `AI_LIMIT`(kind = proposal_review / support) |
 
 ### 錯誤代碼(RAISE EXCEPTION 的 message)
 
 `NOT_PAIRED`、`INVITE_INVALID`、`COUPLE_FULL`、`INVALID_STATE`、`NOT_ALLOWED`、
 `ITEM_INACTIVE`、`INSUFFICIENT_CREDIT`、`INSUFFICIENT_BALANCE`、`INVALID_AMOUNT`、
-`ALREADY_PENDING`、`LIMIT_TOO_HIGH`、`GIFT_LIMIT`(贈送超過單次上限或本週已送過)。UI 依代碼顯示溫暖文案(見 CLAUDE.md 用語表)。
+`ALREADY_PENDING`、`LIMIT_TOO_HIGH`、`AI_LIMIT`、`GIFT_LIMIT`(贈送超過單次上限或本週已送過)。UI 依代碼顯示溫暖文案(見 CLAUDE.md 用語表)。
 
 ## 9. RLS 與權限
 

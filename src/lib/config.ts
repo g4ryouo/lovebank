@@ -14,3 +14,4 @@ export const MAX_CREDIT_LIMIT = 2000;
 export const DEFAULT_TIMEZONE = "Asia/Taipei";
 export const INVITE_CODE_TTL_DAYS = 7;
 export const AI_REVIEWS_PER_DAY = 20;
+export const SUPPORT_MESSAGES_PER_DAY = 30;
