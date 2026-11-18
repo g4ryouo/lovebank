@@ -12,7 +12,7 @@ create temp table t (k text primary key, v text);
 grant all on t to public;
 create function pg_temp.v(k text) returns text language sql as $$ select v from pg_temp.t where t.k = $1 $$;
 
-insert into auth.users (id, email) select pg_temp.u(n), n || '@t' from generate_series(1, 6) n;
+insert into auth.users (id, email) select pg_temp.u(n), n || '@t' from generate_series(1, 8) n;
 
 -- ---------- create_couple ----------
 select pg_temp.as_user(pg_temp.u(1));
@@ -95,6 +95,52 @@ select is((select count(*)::int from (select group_id from public.ledger where r
 -- 加入後可以正常使用 touch_couple(隔天補發 500)
 select is((public._touch_couple_at((select id from public.couples where invite_code = pg_temp.v('code')),
   (select paired_at + interval '1 day' from public.couples where invite_code = pg_temp.v('code')))->>'allowance')::int, 2, '配對隔天補發零用點數(雙方各一筆)');
+
+-- ---------- 兩個人都按了「建立」:可放棄自己的空殼,改加入對方 ----------
+select pg_temp.as_user(pg_temp.u(6));
+select lives_ok($$insert into pg_temp.t select 'code6', (public.create_couple('六號')).invite_code$$, '六號自己建立了一對');
+select pg_temp.as_user(pg_temp.u(3));
+select lives_ok($$insert into pg_temp.t select 'code3', (public.create_couple('三號')).invite_code$$, '三號也建立了一對');
+select lives_ok($$insert into public.menu_items (couple_id, owner_id, title, price) select couple_id, id, '配對前的菜單', 1 from public.profiles where id = pg_temp.u(3)$$, '三號配對前先新增了菜單項目');
+select throws_ok($$select public.create_couple('again')$$, 'P0001', 'INVALID_STATE', '已有一對不能再建立');
+select throws_ok($$select public.join_couple('ZZZZZZZZ', '三號')$$, 'P0001', 'INVITE_INVALID', '輸錯邀請碼不會讓自己的一對消失');
+reset role;
+select is((select count(*)::int from public.profiles where id = pg_temp.u(3)), 1, '輸錯邀請碼後,三號仍在自己的一對');
+select pg_temp.as_user(pg_temp.u(3));
+select lives_ok($$select public.join_couple(pg_temp.v('code6'), '三號')$$, '三號放棄自己的空殼,改加入六號');
+reset role;
+select is((select count(*)::int from public.couples where invite_code = pg_temp.v('code3')), 0, '三號原本的一對已刪除');
+select is((select count(*)::int from public.menu_items where owner_id = pg_temp.u(3)), 0, '三號配對前的菜單一併清掉');
+select is((select couple_id from public.profiles where id = pg_temp.u(3)), (select id from public.couples where invite_code = pg_temp.v('code6')), '三號現在在六號的一對');
+select isnt((select paired_at from public.couples where invite_code = pg_temp.v('code6')), null, '配對完成');
+select is(public._balance(pg_temp.u(3)), 2000, '三號有 2000 愛心');
+select is(public._balance(pg_temp.u(6)), 2000, '六號有 2000 愛心');
+select is((select count(*)::int from public.ledger where user_id in (pg_temp.u(3), pg_temp.u(6)) and reason = 'initial'), 2, '各一筆 initial,沒有重複');
+
+-- 已配對的人不能離開去加別的
+select pg_temp.as_user(pg_temp.u(4));
+select throws_ok($$select public.join_couple(pg_temp.v('code'), '四號')$$, 'P0001', 'INVALID_STATE', '已配對的人不能再加入別的一對');
+reset role;
+select is((select count(*)::int from public.profiles where id = pg_temp.u(4)), 1, '四號仍在自己的一對');
+
+-- 加入別人已滿的一對失敗:整個交易回復,仍保有自己的空殼
+select pg_temp.as_user(pg_temp.u(7));
+select lives_ok($$insert into pg_temp.t select 'code7', (public.create_couple('七號')).invite_code$$, '七號建立一對');
+select throws_ok($$select public.join_couple(pg_temp.v('code'), '七號')$$, 'P0001', 'COUPLE_FULL', '對方那一對已滿 → COUPLE_FULL');
+reset role;
+select is((select count(*)::int from public.profiles where id = pg_temp.u(7)), 1, '加入失敗後,七號仍在自己的一對(整個交易回復)');
+select is((select count(*)::int from public.couples where invite_code = pg_temp.v('code7')), 1, '七號的一對沒被刪掉');
+
+-- 單人一對之間互相加入(兩個空殼各自建立後,其中一人改加入對方)
+select pg_temp.as_user(pg_temp.u(8));
+select lives_ok($$insert into pg_temp.t select 'code8', (public.create_couple('八號')).invite_code$$, '八號建立一對');
+select lives_ok($$select public.join_couple(pg_temp.v('code7'), '八號')$$, '八號放棄自己的空殼,加入七號');
+reset role;
+select is((select count(*)::int from public.profiles where couple_id = (select id from public.couples where invite_code = pg_temp.v('code7'))), 2, '七號的一對有 2 人');
+select is((select count(*)::int from public.couples where invite_code = pg_temp.v('code8')), 0, '八號原本的一對已刪除');
+select pg_temp.as_user(pg_temp.u(7));
+select throws_ok($$select public.join_couple(pg_temp.v('code8'), '七號')$$, 'P0001', 'INVITE_INVALID', '八號放棄的邀請碼失效 → INVITE_INVALID');
+reset role;
 
 -- 函式安全性
 select is((select count(*)::int from pg_proc p join pg_namespace n on n.oid = p.pronamespace

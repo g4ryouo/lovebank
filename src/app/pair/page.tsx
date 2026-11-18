@@ -15,9 +15,17 @@ export default async function PairPage() {
       <h1 className="mt-6 text-3xl text-primary-strong">找到另一半 💙</h1>
 
       {me && couple ? (
-        <section className="w-full max-w-sm rounded-card bg-surface p-6 shadow-sm">
-          <InviteCard code={couple.invite_code} expiresAt={couple.invite_expires_at} />
-        </section>
+        <div className="flex w-full max-w-sm flex-col gap-6">
+          <section className="rounded-card bg-surface p-6 shadow-sm">
+            <InviteCard code={couple.invite_code} expiresAt={couple.invite_expires_at} />
+          </section>
+          <p className="text-center text-muted">如果對方已經先建立了,改輸入對方的邀請碼吧</p>
+          <section className="rounded-card bg-surface p-6 shadow-sm">
+            <h2 className="mb-1 text-xl text-foreground">我有對方的邀請碼</h2>
+            <p className="mb-4 text-sm text-muted">加入後,你剛剛建立的這組邀請碼就會失效喔</p>
+            <JoinCoupleForm suggestedNickname={me.nickname} />
+          </section>
+        </div>
       ) : (
         <div className="flex w-full max-w-sm flex-col gap-6">
           <section className="rounded-card bg-surface p-6 shadow-sm">

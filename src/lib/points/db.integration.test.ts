@@ -180,4 +180,28 @@ describe.skipIf(!URL)("資料庫同時執行(整合測試)", { timeout: 60_000 }
     expect(await scalar(`select count(*) from public.profiles where id in ('${creator}', '${a}', '${b}')`)).toBe("2");
     expect(await scalar(`select count(*) from public.ledger where user_id in ('${creator}', '${a}', '${b}') and reason = 'initial'`)).toBe("2");
   });
+
+  it("兩人各自建立後,同時輸入對方的邀請碼:不會死結,最後只成立一對", async () => {
+    const a = randomUUID();
+    const b = randomUUID();
+    const ins = await psql(`insert into auth.users (id, email) values ('${a}', '${a}@it'), ('${b}', '${b}@it');`);
+    if (ins.code !== 0) throw new Error(ins.err);
+    const ca = await psql(session(a, `select (public.create_couple('A')).invite_code;`));
+    const cb = await psql(session(b, `select (public.create_couple('B')).invite_code;`));
+    const codeA = ca.out.trim().split("\n").pop() ?? "";
+    const codeB = cb.out.trim().split("\n").pop() ?? "";
+
+    const [x, y] = await Promise.all([
+      psql(session(a, `select (public.join_couple('${codeB}', 'A')).id;`, 0.8)),
+      psql(session(b, `select (public.join_couple('${codeA}', 'B')).id;`, 0.8)),
+    ]);
+
+    for (const r of [x, y]) expect(r.err).not.toContain("deadlock");
+    expect([x, y].filter((r) => r.code === 0).length).toBeGreaterThanOrEqual(1);
+    // 不論誰先搶到,最後兩人必須在同一對、且只有一對、各 1 筆 initial
+    expect(await scalar(`select count(distinct couple_id) from public.profiles where id in ('${a}', '${b}')`)).toBe("1");
+    expect(await scalar(`select count(*) from public.profiles where id in ('${a}', '${b}')`)).toBe("2");
+    expect(await scalar(`select count(*) from public.ledger where user_id in ('${a}', '${b}') and reason = 'initial'`)).toBe("2");
+    expect(await scalar(`select count(*) from public.couples where invite_code in ('${codeA}', '${codeB}')`)).toBe("1");
+  });
 });

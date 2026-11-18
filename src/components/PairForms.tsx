@@ -6,7 +6,7 @@ import { SubmitButton } from "./SubmitButton";
 
 const initial: FormState = {};
 const inputClass =
-  "w-full rounded-2xl border-2 border-primary-soft bg-white px-4 py-3 text-lg text-foreground outline-none transition focus:border-primary-strong";
+  "w-full rounded-2xl border-2 border-primary-soft bg-white px-4 py-3 text-lg text-foreground outline-none transition placeholder:text-muted/40 focus:border-primary-strong";
 
 function ErrorText({ message }: { message?: string }) {
   if (!message) return null;
