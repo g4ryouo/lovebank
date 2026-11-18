@@ -369,6 +369,24 @@ isOneToOne: false
 "current_couple_id":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
+"decide_limit_request":
+{ Args: { "p_approve": boolean,"p_request_id": string }; Returns: {
+              "couple_id": string,
+"created_at": string,
+"decided_at": string | null,
+"decided_by": string | null,
+"id": string,
+"reason": string | null,
+"requested_limit": number,
+"requester_id": string,
+"status": Database["public"]['Enums']["limit_request_status"]
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "limit_requests"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "join_couple":
 { Args: { "p_code": string,"p_nickname": string }; Returns: {
               "created_at": string,
@@ -414,6 +432,24 @@ isOneToOne: false
         isOneToOne: true
         isSetofReturn: false
       } },
+"request_limit":
+{ Args: { "p_reason"?: string,"p_requested_limit": number }; Returns: {
+              "couple_id": string,
+"created_at": string,
+"decided_at": string | null,
+"decided_by": string | null,
+"id": string,
+"reason": string | null,
+"requested_limit": number,
+"requester_id": string,
+"status": Database["public"]['Enums']["limit_request_status"]
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "limit_requests"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
 "respond_order":
 { Args: { "p_accept": boolean,"p_order_id": string }; Returns: {
               "accepted_at": string | null,
@@ -444,6 +480,9 @@ isOneToOne: false
       } },
 "send_gift":
 { Args: { "p_amount": number,"p_note"?: string }; Returns: string
+                           },
+"set_credit_limit":
+{ Args: { "p_limit": number }; Returns: number
                            },
 "touch_couple":
 { Args: Record<PropertyKey, never>; Returns: Json

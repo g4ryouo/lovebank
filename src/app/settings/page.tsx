@@ -3,9 +3,10 @@ import { redirect } from "next/navigation";
 import { getViewer } from "@/lib/auth/viewer";
 import { touchCouple } from "@/lib/touch";
 import { getWallet } from "@/lib/wallet";
-import { GIFT_COOLDOWN_DAYS, MAX_GIFT_AMOUNT } from "@/lib/config";
+import { GIFT_COOLDOWN_DAYS, MAX_CREDIT_LIMIT, MAX_GIFT_AMOUNT } from "@/lib/config";
 import { giftCooldown } from "@/lib/gift/status";
 import { GiftForm } from "@/components/GiftForm";
+import { DecideLimitForm, RequestLimitForm, SetPartnerLimitForm } from "@/components/CreditForms";
 
 // 內容因人而異,整頁都是動態內容(T13 再以 Suspense 與骨架畫面優化)
 export const instant = false;
@@ -18,13 +19,20 @@ export default async function SettingsPage() {
   if (!me || !couple?.paired_at) redirect("/pair");
 
   await touchCouple(supabase);
-  const [wallet, partnerRes, lastGift] = await Promise.all([
+  const [wallet, partnerRes, lastGift, requestsRes] = await Promise.all([
     getWallet(supabase, me.credit_limit),
-    supabase.from("profiles").select("nickname").neq("id", user.id).maybeSingle(),
+    // 對方的額度本來就由我控制,所以讀得到(SPEC 第 9 節)
+    supabase.from("profiles").select("nickname, credit_limit").neq("id", user.id).maybeSingle(),
     // 只讀得到自己的帳本:最近一次我送出的禮物
     supabase.from("ledger").select("created_at").eq("reason", "gift").lt("delta", 0).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    supabase.from("limit_requests").select("id, requester_id, requested_limit, reason, status, created_at").order("created_at", { ascending: false }).limit(10),
   ]);
   const partner = partnerRes.data?.nickname ?? "對方";
+  const partnerLimit = partnerRes.data?.credit_limit ?? 0;
+  const requests = requestsRes.data ?? [];
+  const myPending = requests.find((r) => r.requester_id === user.id && r.status === "pending");
+  const theirPending = requests.find((r) => r.requester_id !== user.id && r.status === "pending");
+  const myLast = requests.find((r) => r.requester_id === user.id && r.status !== "pending");
 
   // 可以送的上限:不能超過單次上限,也不能動用預留與信用額度(balance − reserved)
   const giftable = Math.max(0, Math.min(MAX_GIFT_AMOUNT, wallet.balance - wallet.reserved));
@@ -37,6 +45,46 @@ export default async function SettingsPage() {
         ← 回首頁
       </Link>
       <h1 className="text-center text-3xl text-primary-strong">設定 💙</h1>
+
+      <section className="flex flex-col gap-3 rounded-card bg-surface p-6 shadow-sm">
+        <h2 className="text-xl text-foreground">愛心額度 🌱</h2>
+        <p className="text-sm text-muted">
+          愛心不夠的時候,有額度就還是可以先邀請他。額度由對方來決定,最多 {MAX_CREDIT_LIMIT}
+        </p>
+        <p className="text-muted">
+          我的額度 <span className="text-xl text-primary-strong">{wallet.creditLimit}</span> · {partner}的額度{" "}
+          <span className="text-xl text-primary-strong">{partnerLimit}</span>
+        </p>
+
+        {theirPending && (
+          <div className="flex flex-col gap-3 rounded-2xl bg-primary-soft p-4">
+            <p className="text-foreground">
+              {partner}想把額度調成 <span className="text-primary-strong">{theirPending.requested_limit}</span>
+            </p>
+            {theirPending.reason && <p className="text-sm text-muted">「{theirPending.reason}」</p>}
+            <DecideLimitForm id={theirPending.id} />
+          </div>
+        )}
+
+        {myPending ? (
+          <p className="rounded-2xl bg-primary-soft p-4 text-center text-sm text-muted">
+            你想把額度調成 {myPending.requested_limit},正在等{partner}回應 💙
+          </p>
+        ) : (
+          <>
+            {myLast && (
+              <p className="text-sm text-muted">
+                上一次申請 {myLast.requested_limit}:{myLast.status === "approved" ? "已經同意了 ✓" : "婉拒了,沒有關係,之後還可以再申請"}
+              </p>
+            )}
+            <h3 className="mt-2 text-lg text-foreground">想調整我的額度</h3>
+            <RequestLimitForm max={MAX_CREDIT_LIMIT} />
+          </>
+        )}
+
+        <h3 className="mt-4 text-lg text-foreground">直接調整{partner}的額度</h3>
+        <SetPartnerLimitForm partner={partner} max={MAX_CREDIT_LIMIT} current={partnerLimit} />
+      </section>
 
       <section className="flex flex-col gap-3 rounded-card bg-surface p-6 shadow-sm">
         <h2 className="text-xl text-foreground">送愛心給{partner} 🎁</h2>

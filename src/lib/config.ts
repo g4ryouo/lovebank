@@ -10,7 +10,7 @@ export const MAX_PRICE = 100000;
 export const MAX_GIFT_AMOUNT = 2000;
 export const GIFT_COOLDOWN_DAYS = 7;
 export const DEFAULT_CREDIT_LIMIT = 0;
-// MAX_CREDIT_LIMIT:待定(SPEC 第 12 節),不要自行決定。
+export const MAX_CREDIT_LIMIT = 2000;
 export const DEFAULT_TIMEZONE = "Asia/Taipei";
 export const INVITE_CODE_TTL_DAYS = 7;
 export const AI_REVIEWS_PER_DAY = 20;

@@ -217,4 +217,16 @@ describe.skipIf(!URL)("資料庫同時執行(整合測試)", { timeout: 60_000 }
     expect(await scalar(`select count(*) from public.ledger where reason = 'gift' and user_id in ('${g}', '${r}')`)).toBe("2");
     expect(await scalar(`select sum(delta) from public.ledger where reason = 'gift' and user_id in ('${g}', '${r}')`)).toBe("0");
   });
+
+  it("同一個人同時送出兩個額度申請:只成立一筆,另一筆 ALREADY_PENDING", async () => {
+    const { r } = await setup();
+    const a = psql(session(r, `select (public.request_limit(500)).id;`, 1.2));
+    await sleep(400);
+    const b = await psql(session(r, `select (public.request_limit(800)).id;`));
+    const aRes = await a;
+    const results = [aRes, b];
+    expect(results.filter((x) => x.code === 0)).toHaveLength(1);
+    expect(results.find((x) => x.code !== 0)?.err).toContain("ALREADY_PENDING");
+    expect(await scalar(`select count(*) from public.limit_requests where requester_id = '${r}' and status = 'pending'`)).toBe("1");
+  });
 });

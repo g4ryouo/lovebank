@@ -25,5 +25,6 @@ describe("SQL 規則常數與 config.ts 同步", () => {
   it("INVITE_CODE_TTL_DAYS", () => expect(cfg.get("INVITE_CODE_TTL_DAYS")).toBe(config.INVITE_CODE_TTL_DAYS));
   it("MAX_GIFT_AMOUNT", () => expect(cfg.get("MAX_GIFT_AMOUNT")).toBe(config.MAX_GIFT_AMOUNT));
   it("GIFT_COOLDOWN_DAYS", () => expect(cfg.get("GIFT_COOLDOWN_DAYS")).toBe(config.GIFT_COOLDOWN_DAYS));
-  it("沒有多餘的 SQL 常數", () => expect(cfg.size).toBe(6));
+  it("MAX_CREDIT_LIMIT", () => expect(cfg.get("MAX_CREDIT_LIMIT")).toBe(config.MAX_CREDIT_LIMIT));
+  it("沒有多餘的 SQL 常數", () => expect(cfg.size).toBe(7));
 });

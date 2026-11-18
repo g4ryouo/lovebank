@@ -22,7 +22,7 @@ export default async function Home() {
   if (!me || !couple?.paired_at) redirect("/pair");
 
   await touchCouple(supabase); // 補發零用愛心、自動確認、標記過期;要先做,下面查到的才是最新的
-  const [wallet, theirItems, openOrders, todayAllowance] = await Promise.all([
+  const [wallet, theirItems, openOrders, todayAllowance, limitRequests] = await Promise.all([
     getWallet(supabase, me.credit_limit),
     // RLS:對方的項目只讀得到啟用中的
     supabase.from("menu_items").select("id, title, emoji, price").neq("owner_id", user.id),
@@ -32,11 +32,14 @@ export default async function Home() {
       .in("status", ["requested", "accepted", "done_by_giver"]),
     // 只讀得到自己的帳本:今天(依情侶時區)的零用愛心有沒有入帳
     supabase.from("ledger").select("id").eq("reason", "allowance").eq("period_key", todayKey(couple.timezone)).maybeSingle(),
+    // 對方有沒有提出額度申請在等我回應
+    supabase.from("limit_requests").select("id").eq("status", "pending").neq("requester_id", user.id),
   ]);
   const wishes = closestWishes(theirItems.data ?? [], wallet.balance, 3);
   const open = openOrders.data ?? [];
   const waitingMe = open.filter((o) => groupOf(o, user.id) === "waiting-me").length;
   const ongoing = open.length - waitingMe;
+  const limitWaiting = (limitRequests.data ?? []).length;
 
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col items-center justify-center gap-6 p-6 text-center">
@@ -94,11 +97,16 @@ export default async function Home() {
       >
         我的愛的菜單
       </Link>
+      {limitWaiting > 0 && (
+        <Link href="/settings" className="w-full rounded-card bg-primary-soft px-6 py-4 text-primary-strong shadow-sm">
+          他提出了額度申請,去看看吧 💙
+        </Link>
+      )}
       <Link
         href="/settings"
         className="w-full rounded-full bg-surface px-6 py-4 text-lg text-primary-strong shadow-md transition active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100"
       >
-        送愛心給他 🎁
+        愛心額度與送愛心 🎁
       </Link>
       <form action={signOutAction}>
         <button type="submit" className="text-sm text-muted underline">

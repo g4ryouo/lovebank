@@ -45,7 +45,7 @@
 | `MAX_GIFT_AMOUNT` | 2000 | 贈送點數單次上限(避免囤積) |
 | `GIFT_COOLDOWN_DAYS` | 7 | 每人兩次贈送之間至少間隔的天數(滾動 7 天,即每人每週最多送一次) |
 | `DEFAULT_CREDIT_LIMIT` | 0 | 新使用者預設信用額度 |
-| `MAX_CREDIT_LIMIT` | 待定 | 見第 12 節 |
+| `MAX_CREDIT_LIMIT` | 2000 | 信用額度上限(已決定);新使用者預設仍為 `DEFAULT_CREDIT_LIMIT` = 0 |
 | `DEFAULT_TIMEZONE` | Asia/Taipei | 零用點數的日期邊界 |
 | `INVITE_CODE_TTL_DAYS` | 7 | 邀請碼有效天數 |
 | `AI_REVIEWS_PER_DAY` | 20 | 每人每天 AI 審查次數上限 |
@@ -385,7 +385,7 @@ pending / countered ─ 提案人撤回 ──▶ withdrawn
 
 ## 12. 尚未決定(之後討論,不要自行決定)
 
-1. 信用額度:預設值、上限 `MAX_CREDIT_LIMIT`、用量提醒、其他額度玩法。
+1. 信用額度:~~預設值、上限~~(已決定:預設 0、上限 2000)、用量提醒、其他額度玩法。
 2. 贈送點數是否允許使用信用額度(目前暫定:不可)。
 3. 帳本與餘額對方是否可見(目前預設:不可見)。
 4. 零用點數補發天數上限(目前暫定:7 天)。

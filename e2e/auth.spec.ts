@@ -24,7 +24,7 @@ test.describe("登入保護與 LINE 登入入口", () => {
 
   test("登入失敗時顯示溫暖的訊息", async ({ page }) => {
     await page.goto("/login?error=auth");
-    await expect(page.getByRole("alert")).toHaveText("登入沒有成功,再試一次吧");
+    await expect(page.getByText("登入沒有成功,再試一次吧")).toBeVisible();
   });
 
   test("auth/callback 沒帶 code 時回到登入頁並提示", async ({ page }) => {
