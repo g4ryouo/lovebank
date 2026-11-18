@@ -55,7 +55,7 @@ export async function updateItemAction(_prev: MenuFormState, formData: FormData)
     .eq("owner_id", userId)
     .select("id");
   if (error) return { error: friendlyError(error.message) };
-  if (!data?.length) return { error: "找不到這個小心願,重新整理看看吧" };
+  if (!data?.length) return { error: "找不到這個服務,重新整理看看吧" };
   revalidatePath("/menu");
   return { ok: true };
 }

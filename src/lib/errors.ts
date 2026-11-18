@@ -8,14 +8,14 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   COUPLE_FULL: "這一對已經有兩個人了,換一組邀請碼試試吧",
   INVALID_STATE: "這個動作現在做不了,看看最新的狀態吧",
   NOT_ALLOWED: "這個動作你現在不能做喔",
-  ITEM_INACTIVE: "這個小心願暫時不開放了",
+  ITEM_INACTIVE: "這個服務暫時不開放了",
   INSUFFICIENT_CREDIT: "愛心還不夠,再存一下吧",
   INSUFFICIENT_BALANCE: "愛心還不夠,再存一下吧",
   INVALID_AMOUNT: "數字要是大於 0 的整數喔",
   ALREADY_PENDING: "已經有一筆在等回覆了",
   LIMIT_TOO_HIGH: "這個額度有點太高了,調低一點吧",
   AI_LIMIT: "今天問得有點多囉,明天再來找我吧 💙",
-  GIFT_LIMIT: `佛心送愛心每次最多 ${MAX_GIFT_AMOUNT} 顆,而且 ${GIFT_COOLDOWN_DAYS} 天只能送一次喔`,
+  GIFT_LIMIT: `佛心轉讓愛心每次最多 ${MAX_GIFT_AMOUNT} 顆,而且 ${GIFT_COOLDOWN_DAYS} 天只能轉讓一次喔`,
 };
 
 export const GENERIC_ERROR = "發生了一點小問題,再試一次吧";

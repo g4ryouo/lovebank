@@ -69,7 +69,7 @@ export default async function Home() {
           <p className="mt-2 text-sm text-muted">
             可以用的 {wallet.available}
             {wallet.reserved > 0 ? ` · 預留中 ${wallet.reserved}` : ""}
-            {wallet.creditLimit > 0 ? ` · 額度 ${wallet.creditLimit}` : ""}
+            {wallet.creditLimit > 0 ? ` · 可預支額度 ${wallet.creditLimit}` : ""}
           </p>
         )}
         <Link href="/ledger" className="mt-3 inline-block text-sm text-primary-strong underline">
@@ -102,7 +102,7 @@ export default async function Home() {
         href="/orders"
         className={`flex w-full flex-col items-center rounded-card px-6 py-4 text-lg shadow-md transition active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100 ${waitingMe > 0 ? "bg-primary-strong text-white" : "bg-surface text-primary-strong"}`}
       >
-        <span>我們的小心願</span>
+        <span>我們的邀請</span>
         {(waitingMe > 0 || ongoing > 0) && (
           <span className={`text-sm ${waitingMe > 0 ? "text-white/90" : "text-muted"}`}>
             {waitingMe > 0 ? `有 ${waitingMe} 個等你回應 💙` : ""}
@@ -112,33 +112,21 @@ export default async function Home() {
         )}
       </Link>
       <Link
-        href="/partner"
-        className="w-full rounded-full bg-primary-strong px-6 py-4 text-lg text-white shadow-md transition active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100"
-      >
-        看看對方的菜單
-      </Link>
-      <Link
-        href="/menu"
-        className="w-full rounded-full bg-surface px-6 py-4 text-lg text-primary-strong shadow-md transition active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100"
-      >
-        我的愛的菜單
-      </Link>
-      <Link
         href="/proposals"
         className={`w-full rounded-full px-6 py-4 text-lg shadow-md transition active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100 ${proposalWaiting > 0 ? "bg-primary-soft text-primary-strong" : "bg-surface text-primary-strong"}`}
       >
-        想幫他加小心願 ✨{proposalWaiting > 0 ? `(${proposalWaiting} 個等你回應)` : ""}
+        想要他提供的服務 ✨{proposalWaiting > 0 ? `(${proposalWaiting} 個等你回應)` : ""}
       </Link>
       {limitWaiting > 0 && (
         <Link href="/settings" className="w-full rounded-card bg-primary-soft px-6 py-4 text-primary-strong shadow-sm">
-          他提出了額度申請,去看看吧 💙
+          他想調整愛心貸款額度,去看看吧 💙
         </Link>
       )}
       <Link
         href="/settings"
         className="w-full rounded-full bg-surface px-6 py-4 text-lg text-primary-strong shadow-md transition active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100"
       >
-        愛心額度與送愛心 🎁
+        愛心貸款額度與轉讓愛心 🎁
       </Link>
       <Link href="/help" className="w-full rounded-full bg-surface px-6 py-4 text-lg text-primary-strong shadow-md transition active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100">
         愛愛小幫手 💬

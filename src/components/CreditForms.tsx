@@ -31,7 +31,7 @@ export function RequestLimitForm({ max }: { max: number }) {
   return (
     <form action={action} className="flex flex-col gap-3">
       <label className="text-sm text-muted" htmlFor="req-limit">
-        想把額度調成多少?(0 到 {max})
+        想預支多少愛心貸款額度?(0 到 {max})
       </label>
       <input id="req-limit" name="limit" inputMode="numeric" pattern="[0-9]*" required className={inputClass} placeholder="例如:500" />
       <label className="text-sm text-muted" htmlFor="req-reason">
@@ -92,11 +92,11 @@ export function SetPartnerLimitForm({ partner, max, current }: { partner: string
     <form action={action} className="flex flex-col gap-3">
       <input type="hidden" name="partner" value={partner} />
       <label className="text-sm text-muted" htmlFor="set-limit">
-        把{partner}的額度調成(0 到 {max})
+        把{partner}可預支的額度調成(0 到 {max})
       </label>
       <input id="set-limit" name="limit" inputMode="numeric" pattern="[0-9]*" required defaultValue={String(current)} className={inputClass} />
       <Status state={state} />
-      <SubmitButton pendingText="正在調整…">調整額度</SubmitButton>
+      <SubmitButton pendingText="正在調整…">調整可預支額度</SubmitButton>
     </form>
   );
 }

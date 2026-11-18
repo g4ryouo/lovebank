@@ -31,9 +31,9 @@ export function statusLabel(o: LabelOrder, me: string, partner: string): string 
   }
 }
 
-/** 「我是誰」一句話:你想請他做 / 他想請你做 */
+/** 「我是誰」一句話:你想請他提供服務 / 他想請你提供服務 */
 export function whoText(o: Pick<LabelOrder, "giver_id">, me: string, partner: string): string {
-  return o.giver_id === me ? `${partner}想請你做` : `你想請${partner}做`;
+  return o.giver_id === me ? `${partner}想請你提供這個服務` : `你想請${partner}提供這個服務`;
 }
 
 /** 愛心怎麼流動:做的人收下、被服務的人送出;免費就不流動 */

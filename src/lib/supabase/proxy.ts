@@ -3,7 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database";
 
 /** 公開路由:未登入也能進入 */
-const PUBLIC_PATHS = ["/login", "/auth"];
+/** manifest 必須公開:瀏覽器抓它時不帶登入資訊,被導去登入頁就無法「加入主畫面」 */
+const PUBLIC_PATHS = ["/login", "/auth", "/manifest.webmanifest"];
 
 /** 更新 session cookie,並把未登入者導向 /login */
 export async function updateSession(request: NextRequest) {

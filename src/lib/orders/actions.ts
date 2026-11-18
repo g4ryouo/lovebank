@@ -20,7 +20,7 @@ const idSchema = z.string().uuid();
  */
 export async function createOrderAction(_prev: OrderFormState, formData: FormData): Promise<OrderFormState> {
   const id = idSchema.safeParse(formData.get("item_id"));
-  if (!id.success) return { error: "找不到這個小心願,重新整理看看吧" };
+  if (!id.success) return { error: "找不到這個服務,重新整理看看吧" };
   const kind = formData.get("kind") === "offer" ? "offer" : "want";
   const partner = String(formData.get("partner") ?? "對方").slice(0, 20);
 
@@ -34,6 +34,6 @@ export async function createOrderAction(_prev: OrderFormState, formData: FormDat
     message:
       kind === "want"
         ? `已經邀請 ${partner} 囉,等他回應吧 💙`
-        : `已經告訴 ${partner} 你想為他做這件事囉,等他回應吧 💙`,
+        : `已經告訴 ${partner} 你想為他提供這個服務囉,等他回應吧 💙`,
   };
 }

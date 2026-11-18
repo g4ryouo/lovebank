@@ -66,5 +66,5 @@ export async function setPartnerLimitAction(_prev: CreditFormState, formData: Fo
   if (error) return { error: friendlyError(error.message) };
   revalidatePath("/settings");
   revalidatePath("/");
-  return { message: `已經把${partner}的額度調成 ${parsed.data} 囉 💙` };
+  return { message: `已經把${partner}可預支的額度調成 ${parsed.data} 囉 💙` };
 }

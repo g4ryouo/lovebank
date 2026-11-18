@@ -55,8 +55,8 @@ describe("statusLabel", () => {
 
 describe("whoText / heartText", () => {
   it("誰請誰", () => {
-    expect(whoText(o(), G, "小明")).toBe("小明想請你做");
-    expect(whoText(o(), R, "小美")).toBe("你想請小美做");
+    expect(whoText(o(), G, "小明")).toBe("小明想請你提供這個服務");
+    expect(whoText(o(), R, "小美")).toBe("你想請小美提供這個服務");
   });
   it("愛心流向", () => {
     expect(heartText(o(), G)).toBe("完成後你會收下 200 愛心");

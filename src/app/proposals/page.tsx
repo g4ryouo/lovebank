@@ -64,7 +64,7 @@ export default async function ProposalsPage() {
           <p className="shrink-0 text-lg text-primary-strong">{p.price === 0 ? "免費" : `${p.price} 愛心`}</p>
         </div>
         <p className="text-sm text-muted">
-          {role === "owner" ? `${partner}想把這個加進你的菜單` : `你想把這個加進${partner}的菜單`} · {STATUS_TEXT[p.status]}
+          {role === "owner" ? `${partner}想要你提供這個服務` : `你想要${partner}提供這個服務`} · {STATUS_TEXT[p.status]}
         </p>
         <Opinion verdict={p.ai_verdict} comment={p.ai_comment} />
         {p.counter_price !== null && (
@@ -96,8 +96,8 @@ export default async function ProposalsPage() {
         ← 回首頁
       </Link>
       <header className="text-center">
-        <h1 className="text-3xl text-primary-strong">想幫{partner}加小心願 ✨</h1>
-        <p className="mt-2 text-sm text-muted">不能直接改對方的菜單,要經過他同意才會加進去喔</p>
+        <h1 className="text-3xl text-primary-strong">想要{partner}提供的服務 ✨</h1>
+        <p className="mt-2 text-sm text-muted">不能直接改{partner}的菜單,要經過他同意,這個服務才會加進去喔</p>
       </header>
 
       <section className="rounded-card bg-surface p-6 shadow-sm">

@@ -22,5 +22,5 @@ export async function sendGiftAction(_prev: GiftFormState, formData: FormData): 
 
   revalidatePath("/settings");
   revalidatePath("/");
-  return { message: `已經把 ${parsed.data.amount} 顆愛心送給 ${partner} 囉 💙` };
+  return { message: `已經把 ${parsed.data.amount} 顆愛心轉讓給 ${partner} 囉 💙` };
 }

@@ -217,12 +217,19 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 
 ---
 
-## [ ] T13 手機介面美化與 PWA
+## [~] T13 手機介面美化與 PWA
 
 - 手機優先的版面、溫暖視覺、用語依 CLAUDE.md 用語表。
 - Web App Manifest、圖示、standalone 模式、可加入主畫面。
 
 **驗收**:iOS Safari 能加入主畫面並以全螢幕開啟;Lighthouse PWA 基本項目通過。
+
+**進度備註**:
+- PWA:`manifest.ts`(名稱、全螢幕 standalone、淺藍底色、192 / 512 / maskable 圖示)、`scripts/generate-icons.mjs`(愛心圖示,用 Chromium 轉 PNG,不新增套件)、`apple-icon.png`、iOS「加入主畫面」meta、`viewport-fit=cover` 與 safe-area。已移除範本留下的 Next.js 圖示。manifest 必須公開(不帶登入資訊也讀得到),已加進登入保護的公開路徑。Chrome 的 `Page.getInstallabilityErrors` 檢查:manifest 無錯誤、符合安裝條件(測試用瀏覽器為無痕,唯一提示 in-incognito 與網站無關)。
+- 手機版面:底部導覽列(首頁、他的菜單、邀請、我的菜單、設定;避開 iPhone 底部橫條)、頁面進場動畫、清單交錯出場、載入骨架畫面(`loading.tsx`)、完成邀請時的彩帶(剛完成才放、每個分頁一次、尊重「減少動態效果」)。
+- **用詞統一(經使用者要求)**:菜單上的項目 →「服務」、一次往來 →「邀請」、「想要他提供的服務」(服務提案)、信用額度 →「愛心貸款額度」(可「預先使用」/預支)、贈送 →「轉讓愛心」;`src/lib/wording.test.ts` 掃描所有畫面文字,出現舊用詞或冷冰冰的金融用語會失敗。用詞表見 `docs/DESIGN.md`。
+- 測試:manifest、圖示尺寸、導覽列、彩帶規則、用詞、PWA 標頭與手機寬度不橫向捲動(Playwright 12 項)。
+- **待辦**:使用者在 iPhone 實測「加入主畫面」並以全螢幕開啟。已知限制:iOS 主畫面 App 與 Safari、LINE 內建瀏覽器的登入狀態**各自獨立**,在主畫面 App 內要重新登入(走一般瀏覽器的 LINE Login);日常入口建議仍從 LINE 開 LIFF 連結。
 
 ---
 

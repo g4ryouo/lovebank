@@ -46,7 +46,7 @@ export default async function LedgerPage() {
           <p className="mt-3 text-sm text-muted">
             可以用的 {wallet.available}
             {wallet.reserved > 0 ? ` · 預留中 ${wallet.reserved}` : ""}
-            {wallet.creditLimit > 0 ? ` · 額度 ${wallet.creditLimit}` : ""}
+            {wallet.creditLimit > 0 ? ` · 可預支額度 ${wallet.creditLimit}` : ""}
           </p>
         )}
         <p className="mt-2 text-xs text-muted">這本帳只有你自己看得到喔</p>
@@ -54,8 +54,8 @@ export default async function LedgerPage() {
 
       {lines.length === 0 && <p className="text-center text-sm text-muted">還沒有任何紀錄</p>}
       <ul className="flex flex-col gap-3">
-        {lines.map((l) => (
-          <li key={l.id} className="flex items-center justify-between gap-3 rounded-card bg-surface p-4 shadow-sm">
+        {lines.map((l, i) => (
+          <li key={l.id} style={{ ["--i" as string]: Math.min(i, 8) }} className="fade-up flex items-center justify-between gap-3 rounded-card bg-surface p-4 shadow-sm">
             <div className="min-w-0">
               <p className="truncate text-foreground">{l.title}</p>
               {l.detail && <p className="truncate text-xs text-muted">{l.detail}</p>}

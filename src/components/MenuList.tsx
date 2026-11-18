@@ -37,8 +37,8 @@ export function MenuList({ items }: { items: MenuItemView[] }) {
   return (
     <>
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg text-foreground">目前的小心願</h2>
-        {active.length === 0 && <p className="text-sm text-muted">還沒有小心願,先從上面一鍵加入,或自己新增一個吧</p>}
+        <h2 className="text-lg text-foreground">目前可以提供的服務</h2>
+        {active.length === 0 && <p className="text-sm text-muted">還沒有服務,先從上面一鍵加入,或自己新增一個吧</p>}
         {active.map((item) => (
           <article key={item.id} className="rounded-card bg-surface p-5 shadow-sm">
             <div className="flex items-center justify-between gap-3">
@@ -52,7 +52,7 @@ export function MenuList({ items }: { items: MenuItemView[] }) {
               <EditItemForm item={item} />
             </details>
             <button type="button" onClick={() => toggle(item.id, false)} className="mt-3 text-sm text-muted underline">
-              先暫停這個小心願
+              先暫停這個服務
             </button>
           </article>
         ))}
@@ -60,7 +60,7 @@ export function MenuList({ items }: { items: MenuItemView[] }) {
 
       {inactive.length > 0 && (
         <section className="flex flex-col gap-3">
-          <h2 className="text-lg text-foreground">暫停中(對方看不到)</h2>
+          <h2 className="text-lg text-foreground">暫停中(他看不到)</h2>
           {inactive.map((item) => (
             <article key={item.id} className="rounded-card bg-surface/70 p-5 shadow-sm">
               <div className="flex items-center justify-between gap-3">
@@ -74,7 +74,7 @@ export function MenuList({ items }: { items: MenuItemView[] }) {
                 onClick={() => toggle(item.id, true)}
                 className="mt-3 w-full rounded-full bg-primary-strong px-6 py-3 text-lg text-white shadow-md transition active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100"
               >
-                恢復這個小心願
+                恢復這個服務
               </button>
             </article>
           ))}

@@ -20,7 +20,7 @@ function Fields({ idKey, defaults }: { idKey: string; defaults?: { title: string
         </div>
         <div className="flex-1">
           <label className="text-sm text-muted" htmlFor={`title-${idKey}`}>
-            小心願的名字
+            服務的名字
           </label>
           <input id={`title-${idKey}`} name="title" defaultValue={defaults?.title ?? ""} maxLength={40} required className={inputClass} placeholder="例如:幫你按摩" />
         </div>

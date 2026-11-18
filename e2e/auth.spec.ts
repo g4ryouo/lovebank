@@ -45,3 +45,45 @@ test.describe("登入保護與 LINE 登入入口", () => {
     }
   });
 });
+
+test.describe("手機與 PWA 設定", () => {
+  test("manifest 可讀取,名稱與全螢幕設定正確", async ({ request }) => {
+    const res = await request.get("/manifest.webmanifest");
+    expect(res.status()).toBe(200);
+    const m = await res.json();
+    expect(m.name).toBe("愛愛銀行");
+    expect(m.display).toBe("standalone");
+    expect(m.icons.length).toBeGreaterThanOrEqual(3);
+  });
+
+  test("manifest 裡的圖示都能下載且是 PNG", async ({ request }) => {
+    const m = await (await request.get("/manifest.webmanifest")).json();
+    for (const icon of m.icons) {
+      const r = await request.get(icon.src);
+      expect(r.status(), icon.src).toBe(200);
+      expect(r.headers()["content-type"]).toContain("image/png");
+    }
+  });
+
+  test("網頁標頭:主畫面圖示、全螢幕、主題色、避開瀏海", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.locator('link[rel="manifest"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveCount(1);
+    await expect(page.locator('meta[name="mobile-web-app-capable"], meta[name="apple-mobile-web-app-capable"]').first()).toHaveAttribute("content", "yes");
+    await expect(page.locator('meta[name="apple-mobile-web-app-title"]')).toHaveAttribute("content", "愛愛銀行");
+    await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute("content", "#f3f9ff");
+    await expect(page.locator('meta[name="viewport"]')).toHaveAttribute("content", /viewport-fit=cover/);
+  });
+
+  test("登入頁沒有底部導覽列", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByRole("navigation", { name: "主要導覽" })).toHaveCount(0);
+  });
+
+  test("手機寬度不會左右捲動", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 740 });
+    await page.goto("/login");
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+});

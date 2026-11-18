@@ -6,6 +6,7 @@ import { heartText, statusLabel, whoText } from "@/lib/orders/labels";
 import { availableOrderActions, toOrderLike } from "@/lib/points/order-actions";
 import { AutoRefresh } from "@/components/AutoRefresh";
 import { OrderActionButtons } from "@/components/OrderActionButtons";
+import { CelebrateOnce } from "@/components/Confetti";
 
 // 內容因人而異,整頁都是動態內容(T13 再以 Suspense 與骨架畫面優化)
 export const instant = false;
@@ -45,8 +46,9 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col gap-6 p-6">
       <AutoRefresh />
+      <CelebrateOnce id={order.id} status={order.status} completedAt={order.completed_at} />
       <Link href="/orders" className="text-sm text-muted underline">
-        ← 回小心願列表
+        ← 回邀請列表
       </Link>
 
       <header className="rounded-card bg-primary-soft p-6 text-center shadow-sm">

@@ -16,7 +16,7 @@ export const supportRequestSchema = z.object({
 });
 export type SupportMessage = z.infer<typeof supportRequestSchema>["messages"][number];
 
-export const OFF_TOPIC_REPLY = "這個我幫不上忙喔,我只懂愛愛銀行的玩法和規則。想問愛心、小心願或額度的事,隨時問我 💙";
+export const OFF_TOPIC_REPLY = "這個我幫不上忙喔,我只懂愛愛銀行的玩法和規則。想問愛心、服務或貸款額度的事,隨時問我 💙";
 
 const SYSTEM = `你是「愛愛小幫手」,愛愛銀行這個情侶小遊戲 App 的客服。你只回答跟「愛愛銀行」有關的問題:玩法、規則、怎麼操作、各種功能與限制。
 

@@ -14,7 +14,7 @@ export function GiftForm({ partner, max }: { partner: string; max: number }) {
     <form action={action} className="flex flex-col gap-3">
       <input type="hidden" name="partner" value={partner} />
       <label className="text-sm text-muted" htmlFor="gift-amount">
-        想送幾顆愛心(最多 {max})
+        想轉讓幾顆愛心(最多 {max})
       </label>
       <input id="gift-amount" name="amount" inputMode="numeric" pattern="[0-9]*" required className={inputClass} placeholder="例如:500" />
       <label className="text-sm text-muted" htmlFor="gift-note">
@@ -31,7 +31,7 @@ export function GiftForm({ partner, max }: { partner: string; max: number }) {
           {state.message}
         </p>
       )}
-      <SubmitButton pendingText="正在送出愛心…">送出愛心</SubmitButton>
+      <SubmitButton pendingText="正在轉讓愛心…">轉讓愛心</SubmitButton>
     </form>
   );
 }

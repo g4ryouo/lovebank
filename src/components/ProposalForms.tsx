@@ -47,14 +47,14 @@ export function NewProposalForm({ partner }: { partner: string }) {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-3">
-      <p className="text-sm text-muted">想在{partner}的菜單加一個小心願?先送出提案,AI 會給一些參考意見,最後由{partner}決定喔</p>
+      <p className="text-sm text-muted">想要{partner}提供某個服務嗎?先送出提案,AI 會給一些參考意見,最後由{partner}決定喔</p>
       <div className="flex gap-3">
         <div className="w-20 shrink-0">
           <label className="text-sm text-muted" htmlFor="p-emoji">圖示</label>
           <input id="p-emoji" name="emoji" maxLength={8} className={`${inputClass} text-center`} placeholder="😀" />
         </div>
         <div className="flex-1">
-          <label className="text-sm text-muted" htmlFor="p-title">小心願的名字</label>
+          <label className="text-sm text-muted" htmlFor="p-title">服務的名字</label>
           <input id="p-title" name="title" maxLength={40} required className={inputClass} placeholder="例如:幫我按摩" />
         </div>
       </div>

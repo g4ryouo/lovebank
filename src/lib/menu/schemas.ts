@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { MAX_PRICE } from "@/lib/config";
 
-export const titleSchema = z.string().trim().min(1, "給這個小心願取個名字吧").max(40, "名字最多 40 個字喔");
+export const titleSchema = z.string().trim().min(1, "給這個服務取個名字吧").max(40, "名字最多 40 個字喔");
 
 /** emoji 選填:空字串視為沒有;長度限制避免塞入長文字 */
 export const emojiSchema = z

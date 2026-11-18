@@ -26,11 +26,11 @@ describe("describeEntry", () => {
   });
   it("沒有圖示就不留空白;缺少訂單資料時有備用名稱", () => {
     expect(describeEntry(row({ reason: "order", orders: { title_snapshot: "洗碗", emoji_snapshot: null } }), "他").title).toBe("洗碗");
-    expect(describeEntry(row({ reason: "order", orders: null }), "他").title).toBe("小心願");
+    expect(describeEntry(row({ reason: "order", orders: null }), "他").title).toBe("服務");
   });
   it("贈送:送出與收到,並保留備註", () => {
-    expect(describeEntry(row({ reason: "gift", delta: -500, note: "謝謝你" }), "小美")).toEqual({ title: "送愛心給小美 🎁", detail: "謝謝你" });
-    expect(describeEntry(row({ reason: "gift", delta: 500, note: null }), "小美").title).toBe("小美送你的愛心 🎁");
+    expect(describeEntry(row({ reason: "gift", delta: -500, note: "謝謝你" }), "小美")).toEqual({ title: "轉讓愛心給小美 🎁", detail: "謝謝你" });
+    expect(describeEntry(row({ reason: "gift", delta: 500, note: null }), "小美").title).toBe("小美轉讓給你的愛心 🎁");
   });
   it("調整", () => expect(describeEntry(row({ reason: "adjustment", delta: -5, note: "更正" }), "他")).toEqual({ title: "愛心調整", detail: "更正" }));
   it("不使用冷冰冰的金融用語", () => {

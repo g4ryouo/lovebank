@@ -31,12 +31,12 @@ export default async function MenuPage() {
       </div>
       <header className="text-center">
         <h1 className="text-3xl text-primary-strong">我的愛的菜單 💙</h1>
-        <p className="mt-2 text-sm text-muted">放上你願意為對方做的事,對方就可以邀請你囉</p>
+        <p className="mt-2 text-sm text-muted">放上你願意為他提供的服務,他就可以邀請你囉</p>
       </header>
 
       {templates.length > 0 && (
         <section className="rounded-card bg-primary-soft p-5">
-          <h2 className="mb-3 text-lg text-foreground">一鍵加入</h2>
+          <h2 className="mb-3 text-lg text-foreground">一鍵加入常見的服務</h2>
           <div className="flex flex-col gap-2">
             {templates.map((t) => (
               <form key={t.key} action={applyTemplateAction}>
@@ -54,7 +54,7 @@ export default async function MenuPage() {
       <MenuList items={items} />
 
       <section className="rounded-card bg-surface p-6 shadow-sm">
-        <h2 className="mb-4 text-lg text-foreground">自己新增一個</h2>
+        <h2 className="mb-4 text-lg text-foreground">自己新增一個服務</h2>
         <AddItemForm />
       </section>
     </main>

@@ -32,11 +32,12 @@ export default async function OrdersPage() {
     <section className="flex flex-col gap-3">
       <h2 className="text-lg text-foreground">{title}</h2>
       {list.length === 0 && <p className="text-sm text-muted">{empty}</p>}
-      {list.map((o) => (
+      {list.map((o, i) => (
         <Link
           key={o.id}
           href={`/orders/${o.id}`}
-          className={`flex flex-col gap-1 rounded-card p-5 shadow-sm transition active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100 ${highlight ? "bg-primary-soft" : "bg-surface"}`}
+          style={{ ["--i" as string]: Math.min(i, 8) }}
+          className={`fade-up flex flex-col gap-1 rounded-card p-5 shadow-sm transition active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100 ${highlight ? "bg-primary-soft" : "bg-surface"}`}
         >
           <p className="text-xl text-foreground">
             {o.emoji_snapshot} {o.title_snapshot}
@@ -55,10 +56,10 @@ export default async function OrdersPage() {
       <Link href="/" className="text-sm text-muted underline">
         ← 回首頁
       </Link>
-      <h1 className="text-center text-3xl text-primary-strong">我們的小心願 💙</h1>
+      <h1 className="text-center text-3xl text-primary-strong">我們的邀請 💙</h1>
       {section("等我回應", groups["waiting-me"], "目前沒有要回應的,真輕鬆 ✨", true)}
-      {section("進行中", groups.ongoing, "還沒有進行中的小心願")}
-      {section("已結束", groups.done, "還沒有完成的小心願")}
+      {section("進行中", groups.ongoing, "還沒有進行中的邀請")}
+      {section("已結束", groups.done, "還沒有結束的邀請")}
     </main>
   );
 }

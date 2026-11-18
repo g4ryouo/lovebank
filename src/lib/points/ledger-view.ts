@@ -29,11 +29,11 @@ export function describeEntry(e: LedgerRowInput, partner: string): { title: stri
     case "allowance":
       return { title: "零用愛心", detail: e.period_key };
     case "order": {
-      const name = e.orders ? `${e.orders.emoji_snapshot ? `${e.orders.emoji_snapshot} ` : ""}${e.orders.title_snapshot}` : "小心願";
+      const name = e.orders ? `${e.orders.emoji_snapshot ? `${e.orders.emoji_snapshot} ` : ""}${e.orders.title_snapshot}` : "服務";
       return { title: name, detail: e.delta < 0 ? `送出愛心給${partner}` : `收下${partner}的愛心` };
     }
     case "gift":
-      return { title: e.delta < 0 ? `送愛心給${partner} 🎁` : `${partner}送你的愛心 🎁`, detail: e.note };
+      return { title: e.delta < 0 ? `轉讓愛心給${partner} 🎁` : `${partner}轉讓給你的愛心 🎁`, detail: e.note };
     case "adjustment":
       return { title: "愛心調整", detail: e.note };
   }

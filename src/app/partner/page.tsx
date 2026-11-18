@@ -33,18 +33,18 @@ export default async function PartnerPage() {
       </Link>
       <header className="text-center">
         <h1 className="text-3xl text-primary-strong">{partner}的愛的菜單 💙</h1>
-        <p className="mt-2 text-sm text-muted">看看有什麼想邀請他為你做的吧。他做完後,你會送出愛心喔</p>
+        <p className="mt-2 text-sm text-muted">看看有什麼服務想請他提供吧。他做完後,你會送出愛心喔</p>
         <p className="mt-3 text-muted">
           我的愛心 <span className="text-xl text-primary-strong">{wallet.balance}</span>
         </p>
       </header>
 
       <section className="flex flex-col gap-3">
-        {wants.length === 0 && <p className="text-center text-sm text-muted">{partner}還沒有放小心願,等等再來看看吧</p>}
-        {wants.map((item) => {
+        {wants.length === 0 && <p className="text-center text-sm text-muted">{partner}還沒有放上服務,等等再來看看吧</p>}
+        {wants.map((item, i) => {
           const short = item.price > 0 && item.price > wallet.balance;
           return (
-            <article key={item.id} className="flex flex-col gap-3 rounded-card bg-surface p-5 shadow-sm">
+            <article key={item.id} style={{ ["--i" as string]: Math.min(i, 8) }} className="fade-up flex flex-col gap-3 rounded-card bg-surface p-5 shadow-sm">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-xl text-foreground">
                   {item.emoji} {item.title}
@@ -70,7 +70,7 @@ export default async function PartnerPage() {
       </section>
 
       <section className="flex flex-col gap-3 rounded-card bg-primary-soft p-5">
-        <h2 className="text-lg text-foreground">我想為你做 💙</h2>
+        <h2 className="text-lg text-foreground">我想為你提供的服務 💙</h2>
         <p className="text-sm text-muted">從我的菜單挑一個,主動邀請 {partner}。他可以開心接受,也可以婉拒,都沒有關係</p>
         {offers.length === 0 && (
           <p className="text-sm text-muted">
@@ -78,7 +78,7 @@ export default async function PartnerPage() {
             <Link href="/menu" className="underline">
               我的愛的菜單
             </Link>{" "}
-            放一些小心願吧
+            放上一些服務吧
           </p>
         )}
         {offers.map((item) => (

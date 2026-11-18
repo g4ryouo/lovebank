@@ -8,7 +8,7 @@ interface Msg {
   content: string;
 }
 
-const SUGGESTIONS = ["愛心怎麼賺?", "婉拒會扣愛心嗎?", "額度是什麼?", "邀請沒人回應會怎樣?"];
+const SUGGESTIONS = ["愛心怎麼賺?", "婉拒會扣愛心嗎?", "愛心貸款額度是什麼?", "邀請沒人回應會怎樣?"];
 const GREETING = "嗨!我是愛愛小幫手 💙 玩法、規則、怎麼操作,都可以問我。";
 
 export function HelpChat() {
