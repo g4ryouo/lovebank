@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { APP_NAME } from "@/lib/config";
 import { safeNext } from "@/lib/pairing/schemas";
 import { createClient } from "@/lib/supabase/server";
-import { LineLoginButton } from "@/components/LineLoginButton";
+import { LoginPanel } from "@/components/LoginPanel";
 
 // 登入狀態因人而異,整頁都是動態內容:暫不要求即時顯示(T13 再以 Suspense 與骨架畫面優化)
 export const instant = false;
@@ -30,7 +30,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             登入沒有成功,再試一次吧
           </p>
         )}
-        <LineLoginButton next={next} />
+        <LoginPanel next={next} />
         <p className="text-center text-xs text-muted">登入就代表你願意和另一半一起收集愛心</p>
       </div>
     </main>

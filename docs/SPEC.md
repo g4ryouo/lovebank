@@ -52,7 +52,7 @@
 
 ```
 手機 (PWA, Next.js 畫面)
-   │  LINE 登入 (LINE Login → Supabase Auth)
+   │  LINE 登入 (在 LINE 內以 LIFF 自動登入;一般瀏覽器用 LINE Login;皆經 Supabase Auth)
    ▼
 Next.js (Vercel)
    ├─ 一般讀取、呼叫資料庫函式(使用者身分的 Supabase client)
