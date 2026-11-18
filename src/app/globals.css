@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* 設計基底:淺藍色系、粗圓體、大圓角。完整美化見 T13。 */
+:root {
+  --background: #f3f9ff;
+  --foreground: #1f3a5f;
+  --surface: #ffffff;
+  --primary: #7cc0f5;
+  --primary-strong: #4a9ee0;
+  --primary-soft: #dcefff;
+  --muted: #6b86a8;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-soft: var(--primary-soft);
+  --color-muted: var(--muted);
+  --font-sans: var(--font-huninn), "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --radius-card: 1.5rem;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  /* 粉圓只有一種字重,以字重加描邊做出粗圓體的感覺 */
+  font-weight: 700;
+  -webkit-text-stroke: 0.4px currentColor;
+}
