@@ -149,7 +149,7 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 
 ## [ ] T8 贈送點數
 
-- `/settings` 的贈送功能,呼叫 `send_gift`;不可超過 `balance − reserved`,**且單次不可超過 `MAX_GIFT_AMOUNT`(2000)**(資料庫函式與 `_cfg` 同步,需新 migration)。
+- `/settings` 的贈送功能,呼叫 `send_gift`;不可超過 `balance − reserved`,**且單次不可超過 `MAX_GIFT_AMOUNT`(2000),且最近 `GIFT_COOLDOWN_DAYS`(7)天內沒送過**,違反回 `GIFT_LIMIT`(資料庫函式與 `_cfg` 同步,需新 migration;錯誤代碼要加進 `ErrorCode` 與溫暖文案)。
 
 **驗收**:兩筆分錄加總為 0;超額被擋;金額必須為正整數。
 

@@ -8,6 +8,7 @@ describe("config", () => {
     expect(config.REQUEST_EXPIRE_DAYS).toBe(3);
     expect(config.MAX_PRICE).toBe(100000);
     expect(config.MAX_GIFT_AMOUNT).toBe(2000);
+    expect(config.GIFT_COOLDOWN_DAYS).toBe(7);
     expect(config.DEFAULT_TIMEZONE).toBe("Asia/Taipei");
   });
   it("點數常數皆為整數", () => {

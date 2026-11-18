@@ -42,7 +42,8 @@
 | `AUTO_CONFIRM_HOURS` | 24 | 「做完了」之後自動確認的時限 |
 | `REQUEST_EXPIRE_DAYS` | 3 | `requested` 訂單未回應即自動過期的天數 |
 | `MAX_PRICE` | 100000 | 菜單價格上限 |
-| `MAX_GIFT_AMOUNT` | 2000 | 贈送點數單次上限(避免囤積);是否限制次數待確認 |
+| `MAX_GIFT_AMOUNT` | 2000 | 贈送點數單次上限(避免囤積) |
+| `GIFT_COOLDOWN_DAYS` | 7 | 每人兩次贈送之間至少間隔的天數(滾動 7 天,即每人每週最多送一次) |
 | `DEFAULT_CREDIT_LIMIT` | 0 | 新使用者預設信用額度 |
 | `MAX_CREDIT_LIMIT` | 待定 | 見第 12 節 |
 | `DEFAULT_TIMEZONE` | Asia/Taipei | 零用點數的日期邊界 |
@@ -84,7 +85,7 @@ available(u) = balance(u) + credit_limit(u) − reserved(u)
 - 接受訂單的條件(權威檢查):`available(receiver) ≥ price_snapshot`。
 - 完成訂單時**不再檢查額度**(已在接受時預留),避免訂單卡死。
 - 調低信用額度只影響之後的新接受,不追溯既有訂單。
-- 贈送點數:`balance(sender) − reserved(sender) ≥ amount`,**不可使用信用額度**(暫定,見第 12 節);且**單次 `amount ≤ MAX_GIFT_AMOUNT`**。
+- 贈送點數:`balance(sender) − reserved(sender) ≥ amount`,**不可使用信用額度**(暫定,見第 12 節);且**單次 `amount ≤ MAX_GIFT_AMOUNT`**,且送出者**最近 `GIFT_COOLDOWN_DAYS` 天內沒有送過**(違反時回 `GIFT_LIMIT`)。
 
 ### 5.2 帳本 (ledger)
 
@@ -316,7 +317,7 @@ service_proposals (
 
 `NOT_PAIRED`、`INVITE_INVALID`、`COUPLE_FULL`、`INVALID_STATE`、`NOT_ALLOWED`、
 `ITEM_INACTIVE`、`INSUFFICIENT_CREDIT`、`INSUFFICIENT_BALANCE`、`INVALID_AMOUNT`、
-`ALREADY_PENDING`、`LIMIT_TOO_HIGH`。UI 依代碼顯示溫暖文案(見 CLAUDE.md 用語表)。
+`ALREADY_PENDING`、`LIMIT_TOO_HIGH`、`GIFT_LIMIT`(贈送超過單次上限或本週已送過)。UI 依代碼顯示溫暖文案(見 CLAUDE.md 用語表)。
 
 ## 9. RLS 與權限
 
