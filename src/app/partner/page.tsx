@@ -33,7 +33,7 @@ export default async function PartnerPage() {
       </Link>
       <header className="text-center">
         <h1 className="text-3xl text-primary-strong">{partner}的愛的菜單 💙</h1>
-        <p className="mt-2 text-sm text-muted">看看有什麼想邀請 TA 為你做的吧。TA 做完後,你會送出愛心喔</p>
+        <p className="mt-2 text-sm text-muted">看看有什麼想邀請他為你做的吧。他做完後,你會送出愛心喔</p>
         <p className="mt-3 text-muted">
           我的愛心 <span className="text-xl text-primary-strong">{wallet.balance}</span>
         </p>
@@ -71,7 +71,7 @@ export default async function PartnerPage() {
 
       <section className="flex flex-col gap-3 rounded-card bg-primary-soft p-5">
         <h2 className="text-lg text-foreground">我想為你做 💙</h2>
-        <p className="text-sm text-muted">從我的菜單挑一個,主動邀請 {partner}。TA 可以開心接受,也可以婉拒,都沒有關係</p>
+        <p className="text-sm text-muted">從我的菜單挑一個,主動邀請 {partner}。他可以開心接受,也可以婉拒,都沒有關係</p>
         {offers.length === 0 && (
           <p className="text-sm text-muted">
             你的菜單還是空的,先到{" "}

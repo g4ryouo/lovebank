@@ -33,7 +33,7 @@ export async function createOrderAction(_prev: OrderFormState, formData: FormDat
   return {
     message:
       kind === "want"
-        ? `已經邀請 ${partner} 囉,等 TA 回應吧 💙`
-        : `已經告訴 ${partner} 你想為 TA 做這件事囉,等 TA 回應吧 💙`,
+        ? `已經邀請 ${partner} 囉,等他回應吧 💙`
+        : `已經告訴 ${partner} 你想為 TA 做這件事囉,等他回應吧 💙`,
   };
 }
