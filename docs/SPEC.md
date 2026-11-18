@@ -194,6 +194,7 @@ profiles (
   id uuid pk references auth.users,
   couple_id uuid references couples,          -- 配對前為 null
   nickname text not null check (char_length(nickname) between 1 and 20),
+  avatar_url text,                            -- LINE 大頭貼;只能由 sync_my_avatar 從已驗證的登入憑證取得,且只接受 https://profile.line-scdn.net/ 開頭的網址
   credit_limit int not null default 0 check (credit_limit >= 0),
   created_at timestamptz not null default now(),
   unique (id, couple_id)                      -- 供複合 FK 使用

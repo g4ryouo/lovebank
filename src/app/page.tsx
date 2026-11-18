@@ -10,6 +10,7 @@ import { groupOf } from "@/lib/orders/labels";
 import { localDateKey } from "@/lib/points/allowance";
 import { AutoRefresh } from "@/components/AutoRefresh";
 import { WishBar } from "@/components/WishBar";
+import { CouplePair } from "@/components/Avatar";
 
 // 登入狀態因人而異,整頁都是動態內容:暫不要求即時顯示(T13 再以 Suspense 與骨架畫面優化)
 export const instant = false;
@@ -22,7 +23,7 @@ export default async function Home() {
   if (!me || !couple?.paired_at) redirect("/pair");
 
   await touchCouple(supabase); // 補發零用愛心、自動確認、標記過期;要先做,下面查到的才是最新的
-  const [wallet, theirItems, openOrders, todayAllowance, limitRequests, proposals] = await Promise.all([
+  const [wallet, theirItems, openOrders, todayAllowance, limitRequests, proposals, partnerRes, myAvatar] = await Promise.all([
     getWallet(supabase, me.credit_limit),
     // RLS:對方的項目只讀得到啟用中的
     supabase.from("menu_items").select("id, title, emoji, price").neq("owner_id", user.id),
@@ -36,6 +37,10 @@ export default async function Home() {
     supabase.from("limit_requests").select("id").eq("status", "pending").neq("requester_id", user.id),
     // 服務提案:等我回應的(我是擁有者且待回應,或我是提案人且被還價)
     supabase.from("service_proposals").select("id, owner_id, proposer_id, status").in("status", ["pending", "countered"]),
+    // 對方的暱稱與 LINE 大頭貼(同一對的人才讀得到)
+    supabase.from("profiles").select("nickname, avatar_url").neq("id", user.id).maybeSingle(),
+    // 我的大頭貼:資料庫還沒有時,從我的登入憑證同步(只接受 LINE 官方圖片網址)
+    me.avatar_url ? Promise.resolve(me.avatar_url) : supabase.rpc("sync_my_avatar").then((r) => r.data ?? null),
   ]);
   const wishes = closestWishes(theirItems.data ?? [], wallet.balance, 3);
   const open = openOrders.data ?? [];
@@ -50,8 +55,14 @@ export default async function Home() {
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col items-center justify-center gap-6 p-6 text-center">
       <AutoRefresh seconds={15} />
       <div className="w-full rounded-card bg-primary-soft px-8 py-10 shadow-sm">
-        <h1 className="text-3xl text-primary-strong">💙 {APP_NAME}</h1>
-        <p className="mt-3 text-muted">嗨,{me.nickname}!你們已經配對成功囉</p>
+        <h1 className="text-2xl text-primary-strong">💙 {APP_NAME}</h1>
+        <div className="mt-5">
+          <CouplePair
+            me={{ name: me.nickname, url: myAvatar }}
+            partner={{ name: partnerRes.data?.nickname ?? "對方", url: partnerRes.data?.avatar_url ?? null }}
+          />
+        </div>
+        <p className="mt-4 text-muted">你們已經配對成功囉</p>
         <p className="mt-6 text-sm text-muted">我的愛心</p>
         <p className="text-5xl text-primary-strong">{wallet.balance}</p>
         {(wallet.reserved > 0 || wallet.creditLimit > 0) && (

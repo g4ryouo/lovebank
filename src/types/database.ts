@@ -151,14 +151,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "couple_id": string | null,"created_at": string,"credit_limit": number,"id": string,"nickname": string
+                    "avatar_url": string | null,"couple_id": string | null,"created_at": string,"credit_limit": number,"id": string,"nickname": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "couple_id"?: string | null,"created_at"?: string,"credit_limit"?: number,"id": string,"nickname": string
+                    "avatar_url"?: string | null,"couple_id"?: string | null,"created_at"?: string,"credit_limit"?: number,"id": string,"nickname": string
                   }
                   Update: {
-                    "couple_id"?: string | null,"created_at"?: string,"credit_limit"?: number,"id"?: string,"nickname"?: string
+                    "avatar_url"?: string | null,"couple_id"?: string | null,"created_at"?: string,"credit_limit"?: number,"id"?: string,"nickname"?: string
                   }
                   Relationships: [
                     {
@@ -648,6 +648,9 @@ isOneToOne: false
                            },
 "set_credit_limit":
 { Args: { "p_limit": number }; Returns: number
+                           },
+"sync_my_avatar":
+{ Args: Record<PropertyKey, never>; Returns: string
                            },
 "touch_couple":
 { Args: Record<PropertyKey, never>; Returns: Json
