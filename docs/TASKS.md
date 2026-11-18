@@ -98,7 +98,7 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 
 ---
 
-## [ ] T4 LINE 登入與配對
+## [~] T4 LINE 登入與配對
 
 **內容**
 - LINE Login 設定(LINE Developers channel、redirect URL;LINE 不一定回傳 email,帳號不得只靠 email 辨識)。先確認 Supabase 自訂 OIDC 提供者可用;不可用時列出替代方案與取捨,不自行決定。使用整頁導向流程,不用 popup(iOS 主畫面 PWA 相容)。
@@ -106,7 +106,7 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 - 畫面:`/login`、`/pair`。配對完成發放 `initial`。
 - Playwright 流程:登入 → 建立 → 另一帳號加入(用測試帳號或 mock auth)。
 
-**進度備註**:`0006_pairing.sql`(`create_couple`、`join_couple`)與 pgTAP(43 項)、同時加入的並發測試已完成並通過(本機 PostgreSQL 驗證)。**待做**:套件(`@supabase/supabase-js`、`@supabase/ssr`、`zod`,需先經同意)、`/login`、`/pair` 畫面、Playwright。Supabase 專案與 LINE channel 已由使用者建立,尚待實測登入。
+**進度備註**:資料庫(`0006_pairing.sql`,pgTAP 43 項、同時加入並發測試)、`/login`、`/auth/callback`、`/pair`、首頁簡易版、`proxy.ts` 登入保護已完成。Playwright 6 項(登入保護、真的跳到 LINE 登入頁、錯誤訊息、`next` 參數防外跳)通過;雲端環境以 `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium pnpm test:e2e` 執行。LINE 登入設定已用 Supabase 實際驗證會導向 LINE。**待辦**:(1) 在 Supabase 專案套用 migration(SQL Editor 執行合併檔);(2) Supabase Redirect URLs 加入網站網址;(3) 兩個真實 LINE 帳號完成「登入 → 建立 → 加入 → 各 2000 愛心」實測(完整雙帳號流程無法自動化,需 LINE 登入),通過後改為 `[x]`。
 
 **驗收**:兩個帳號能配成一對;第三人加入失敗;雙方各有 2000 愛心。
 
