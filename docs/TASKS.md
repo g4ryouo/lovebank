@@ -28,9 +28,11 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 
 ---
 
-## [ ] T2 資料庫遷移與 RLS
+## [~] T2 資料庫遷移與 RLS
 
 **前置**:本機 Docker。
+
+**進度備註**:migration 0001–0003、pgTAP(96 項)與 `src/types/database.ts` 已完成。雲端環境無法拉 Supabase 映像,改用本機 PostgreSQL + pgTAP + `supabase/local/shim.sql`(模擬 auth / 角色)驗證,指令 `pnpm db:test:local`,全部通過。**待辦**:在有 Docker 的機器上跑 `pnpm db:start && pnpm db:reset && pnpm db:test`,確認後改為 `[x]`。
 
 **檔案(依序)**
 1. `supabase init` → `supabase/config.toml`;加入 `db:*` scripts。
