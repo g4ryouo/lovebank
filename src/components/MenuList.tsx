@@ -3,6 +3,7 @@
 import { useOptimistic, useTransition } from "react";
 import { setActiveAction } from "@/lib/menu/actions";
 import { EditItemForm } from "./MenuForms";
+import { OrderButton } from "./OrderButton";
 
 export interface MenuItemView {
   id: string;
@@ -15,7 +16,7 @@ export interface MenuItemView {
 const priceText = (p: number) => (p === 0 ? "免費" : `${p} 愛心`);
 
 /** 暫停與恢復採「樂觀更新」:按下去立刻移動,伺服器在背景存檔(失敗會自動還原) */
-export function MenuList({ items }: { items: MenuItemView[] }) {
+export function MenuList({ items, partner }: { items: MenuItemView[]; partner: string }) {
   const [view, setOptimistic] = useOptimistic(items, (state, change: { id: string; active: boolean }) =>
     state.map((i) => (i.id === change.id ? { ...i, active: change.active } : i)),
   );
@@ -47,7 +48,10 @@ export function MenuList({ items }: { items: MenuItemView[] }) {
               </p>
               <p className="shrink-0 text-lg text-primary-strong">{priceText(item.price)}</p>
             </div>
-            <details className="mt-2">
+            <div className="mt-3">
+              <OrderButton itemId={item.id} kind="offer" partner={partner} label={`邀請 ${partner}`} />
+            </div>
+            <details className="mt-3">
               <summary className="cursor-pointer text-sm text-muted">修改</summary>
               <EditItemForm item={item} />
             </details>

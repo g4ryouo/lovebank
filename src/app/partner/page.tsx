@@ -15,16 +15,14 @@ export default async function PartnerPage() {
   const { supabase, user, me, couple } = await getViewer();
   if (!me || !couple?.paired_at) redirect("/pair");
 
-  const [wallet, partnerRes, theirItems, myItems] = await Promise.all([
+  const [wallet, partnerRes, theirItems] = await Promise.all([
     getWallet(supabase, me.credit_limit),
     supabase.from("profiles").select("nickname").neq("id", user.id).maybeSingle(),
     // RLS:對方的項目只讀得到啟用中的
     supabase.from("menu_items").select("id, title, emoji, price").neq("owner_id", user.id).order("created_at", { ascending: true }),
-    supabase.from("menu_items").select("id, title, emoji, price").eq("owner_id", user.id).eq("active", true).order("created_at", { ascending: true }),
   ]);
   const partner = partnerRes.data?.nickname ?? "對方";
   const wants = theirItems.data ?? [];
-  const offers = myItems.data ?? [];
 
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col gap-6 p-6">
@@ -34,13 +32,28 @@ export default async function PartnerPage() {
       <header className="text-center">
         <h1 className="text-3xl text-primary-strong">{partner}的愛的菜單 💙</h1>
         <p className="mt-2 text-sm text-muted">看看有什麼服務想請他提供吧。他做完後,你會送出愛心喔</p>
+        <p className="mt-1 text-xs text-muted">想主動為他提供服務?到「我的菜單」,每個服務旁邊都有邀請按鈕</p>
         <p className="mt-3 text-muted">
           我的愛心 <span className="text-xl text-primary-strong">{wallet.balance}</span>
         </p>
       </header>
 
       <section className="flex flex-col gap-3">
-        {wants.length === 0 && <p className="text-center text-sm text-muted">{partner}還沒有放上服務,等等再來看看吧</p>}
+        {wants.length === 0 && (
+          <div className="flex flex-col items-center gap-3 rounded-card bg-primary-soft p-6 text-center">
+            <p className="text-3xl" aria-hidden>
+              🍽️
+            </p>
+            <p className="text-lg text-foreground">{partner}還沒有放上服務</p>
+            <p className="text-sm text-muted">你可以先提出「想要他提供的服務」,經過{partner}同意後,就會出現在他的菜單裡</p>
+            <Link
+              href="/proposals"
+              className="mt-1 w-full rounded-full bg-primary-strong px-6 py-4 text-lg text-white shadow-md transition active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100"
+            >
+              想要他提供的服務 ✨
+            </Link>
+          </div>
+        )}
         {wants.map((item, i) => {
           const short = item.price > 0 && item.price > wallet.balance;
           return (
@@ -67,31 +80,6 @@ export default async function PartnerPage() {
             </article>
           );
         })}
-      </section>
-
-      <section className="flex flex-col gap-3 rounded-card bg-primary-soft p-5">
-        <h2 className="text-lg text-foreground">我想為你提供的服務 💙</h2>
-        <p className="text-sm text-muted">從我的菜單挑一個,主動邀請 {partner}。他可以開心接受,也可以婉拒,都沒有關係</p>
-        {offers.length === 0 && (
-          <p className="text-sm text-muted">
-            你的菜單還是空的,先到{" "}
-            <Link href="/menu" className="underline">
-              我的愛的菜單
-            </Link>{" "}
-            放上一些服務吧
-          </p>
-        )}
-        {offers.map((item) => (
-          <article key={item.id} className="flex flex-col gap-3 rounded-2xl bg-surface p-4">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-lg text-foreground">
-                {item.emoji} {item.title}
-              </p>
-              <p className="shrink-0 text-primary-strong">{priceText(item.price)}</p>
-            </div>
-            <OrderButton itemId={item.id} kind="offer" partner={partner} label={`邀請 ${partner}`} />
-          </article>
-        ))}
       </section>
     </main>
   );

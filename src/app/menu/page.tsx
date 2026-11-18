@@ -14,12 +14,12 @@ export default async function MenuPage() {
   const { supabase, user, me, couple } = await getViewer();
   if (!me || !couple?.paired_at) redirect("/pair");
 
-  const { data } = await supabase
-    .from("menu_items")
-    .select("id, title, emoji, price, active, created_at")
-    .eq("owner_id", user.id)
-    .order("created_at", { ascending: true });
-  const items = data ?? [];
+  const [itemsRes, partnerRes] = await Promise.all([
+    supabase.from("menu_items").select("id, title, emoji, price, active, created_at").eq("owner_id", user.id).order("created_at", { ascending: true }),
+    supabase.from("profiles").select("nickname").neq("id", user.id).maybeSingle(),
+  ]);
+  const items = itemsRes.data ?? [];
+  const partner = partnerRes.data?.nickname ?? "對方";
   const templates = unappliedTemplates(items.map((i) => i.title));
 
   return (
@@ -31,7 +31,7 @@ export default async function MenuPage() {
       </div>
       <header className="text-center">
         <h1 className="text-3xl text-primary-strong">我的愛的菜單 💙</h1>
-        <p className="mt-2 text-sm text-muted">放上你願意為他提供的服務,他就可以邀請你囉</p>
+        <p className="mt-2 text-sm text-muted">放上你願意為他提供的服務,他就可以邀請你囉。你也可以按服務旁邊的「邀請」,主動請他來享受(他接受、你做完、他確認後,他會送出愛心給你)</p>
       </header>
 
       {templates.length > 0 && (
@@ -51,7 +51,7 @@ export default async function MenuPage() {
         </section>
       )}
 
-      <MenuList items={items} />
+      <MenuList items={items} partner={partner} />
 
       <section className="rounded-card bg-surface p-6 shadow-sm">
         <h2 className="mb-4 text-lg text-foreground">自己新增一個服務</h2>
