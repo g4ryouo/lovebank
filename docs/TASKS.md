@@ -87,10 +87,10 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 
 ---
 
-## [ ] T4 Google 登入與配對
+## [ ] T4 LINE 登入與配對
 
 **內容**
-- Supabase Google OAuth 設定(Google Cloud OAuth client、redirect URL)。使用整頁導向流程,不用 popup(iOS 主畫面 PWA 相容)。
+- LINE Login 設定(LINE Developers channel、redirect URL;LINE 不一定回傳 email,帳號不得只靠 email 辨識)。先確認 Supabase 自訂 OIDC 提供者可用;不可用時列出替代方案與取捨,不自行決定。使用整頁導向流程,不用 popup(iOS 主畫面 PWA 相容)。
 - `create_couple`、`join_couple`(migration `0006`)與 pgTAP:成員上限 2 人、邀請碼過期、重複加入、並發加入。
 - 畫面:`/login`、`/pair`。配對完成發放 `initial`。
 - Playwright 流程:登入 → 建立 → 另一帳號加入(用測試帳號或 mock auth)。
@@ -189,7 +189,7 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 
 ## [ ] T14 部署與實際使用測試
 
-- Vercel 部署;環境變數;Supabase 正式專案與 migration;Google OAuth 正式 redirect。
+- Vercel 部署;環境變數;Supabase 正式專案與 migration;LINE Login 正式 redirect。
 - 兩支真機實際使用一週,記錄手感問題。
 - 檢查:service role 與 AI 金鑰未進入 client bundle。
 

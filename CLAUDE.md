@@ -13,7 +13,7 @@ LoveBank 是給情侶使用的「愛的點數」手機優先 PWA。每個人有�
 
 Next.js (App Router) + TypeScript strict、Tailwind、Supabase (Postgres + Auth + RLS)、
 Vitest、Playwright、Vercel、pnpm。
-登入:Google 帳號(Supabase Auth)。AI 審查:Anthropic API(僅伺服器端呼叫)。
+登入:LINE 帳號(LINE Login,經 Supabase Auth)。AI 審查:Anthropic API(僅伺服器端呼叫)。
 
 ## 常用指令(由 T1、T2 建立)
 
