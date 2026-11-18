@@ -514,10 +514,28 @@ isOneToOne: false
         to: "orders"
         isOneToOne: true
         isSetofReturn: false
+      } },
+"withdraw_limit_request":
+{ Args: { "p_request_id": string }; Returns: {
+              "couple_id": string,
+"created_at": string,
+"decided_at": string | null,
+"decided_by": string | null,
+"id": string,
+"reason": string | null,
+"requested_limit": number,
+"requester_id": string,
+"status": Database["public"]['Enums']["limit_request_status"]
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "limit_requests"
+        isOneToOne: true
+        isSetofReturn: false
       } }
           }
           Enums: {
-            "ai_verdict": "ok"|"caution"|"unavailable","ledger_reason": "initial"|"allowance"|"order"|"gift"|"adjustment","limit_request_status": "pending"|"approved"|"declined","order_status": "requested"|"accepted"|"done_by_giver"|"completed"|"declined"|"cancelled"|"expired","proposal_status": "pending"|"countered"|"agreed"|"rejected"|"withdrawn"
+            "ai_verdict": "ok"|"caution"|"unavailable","ledger_reason": "initial"|"allowance"|"order"|"gift"|"adjustment","limit_request_status": "pending"|"approved"|"declined"|"withdrawn","order_status": "requested"|"accepted"|"done_by_giver"|"completed"|"declined"|"cancelled"|"expired","proposal_status": "pending"|"countered"|"agreed"|"rejected"|"withdrawn"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -633,7 +651,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "ai_verdict": ["ok", "caution", "unavailable"],"ledger_reason": ["initial", "allowance", "order", "gift", "adjustment"],"limit_request_status": ["pending", "approved", "declined"],"order_status": ["requested", "accepted", "done_by_giver", "completed", "declined", "cancelled", "expired"],"proposal_status": ["pending", "countered", "agreed", "rejected", "withdrawn"]
+            "ai_verdict": ["ok", "caution", "unavailable"],"ledger_reason": ["initial", "allowance", "order", "gift", "adjustment"],"limit_request_status": ["pending", "approved", "declined", "withdrawn"],"order_status": ["requested", "accepted", "done_by_giver", "completed", "declined", "cancelled", "expired"],"proposal_status": ["pending", "countered", "agreed", "rejected", "withdrawn"]
           }
         }
 } as const

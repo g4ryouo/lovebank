@@ -180,7 +180,7 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 
 **驗收**:核准後 `credit_limit` 更新且可用額度立即反映;自己呼叫 `set_credit_limit` 對自己失敗。
 
-**進度備註**:`0010_credit_limit.sql`(`set_credit_limit`、`request_limit`、`decide_limit_request`;上限 2000、預設 0;核准者必須是另一方;重複核准或婉拒為無操作成功)、`credit_limit.test.sql`(pgTAP 48 項,含「函式只設定對方」「可用額度立即反映」「額度操作不寫 ledger、不動訂單」)、同一人同時申請的並發測試、`/settings` 的額度區塊(我的與他的額度、申請、核准與婉拒、直接調整他的額度)、首頁「他提出了額度申請」提醒已完成。**待辦**:在 Supabase 執行 0010,兩支手機實測後改為 `[x]`。**備註**:SPEC 沒有「撤回申請」,若對方一直不回應,申請人無法再提新申請(對方直接調整額度不會自動結束待處理的申請),可日後討論。
+**進度備註**:`0010_credit_limit.sql`(`set_credit_limit`、`request_limit`、`decide_limit_request`;上限 2000、預設 0;核准者必須是另一方;重複核准或婉拒為無操作成功)、`credit_limit.test.sql`(pgTAP 48 項,含「函式只設定對方」「可用額度立即反映」「額度操作不寫 ledger、不動訂單」)、同一人同時申請的並發測試、`/settings` 的額度區塊(我的與他的額度、申請、核准與婉拒、直接調整他的額度)、首頁「他提出了額度申請」提醒已完成。**待辦**:在 Supabase 執行 0010,兩支手機實測後改為 `[x]`。**撤回申請(經使用者要求)**:`0011_withdraw_limit_request.sql` 新增 `withdrawn` 狀態與 `withdraw_limit_request`(只有申請人能撤回、重複撤回為無操作成功、已核准或婉拒的不能撤回),`credit_withdraw.test.sql`(pgTAP 27 項)與撤回和同意同時發生的並發測試已完成;`/settings` 的「撤回申請」按鈕。
 
 ---
 

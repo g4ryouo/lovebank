@@ -6,7 +6,7 @@ import { getWallet } from "@/lib/wallet";
 import { GIFT_COOLDOWN_DAYS, MAX_CREDIT_LIMIT, MAX_GIFT_AMOUNT } from "@/lib/config";
 import { giftCooldown } from "@/lib/gift/status";
 import { GiftForm } from "@/components/GiftForm";
-import { DecideLimitForm, RequestLimitForm, SetPartnerLimitForm } from "@/components/CreditForms";
+import { DecideLimitForm, RequestLimitForm, SetPartnerLimitForm, WithdrawLimitForm } from "@/components/CreditForms";
 
 // 內容因人而異,整頁都是動態內容(T13 再以 Suspense 與骨架畫面優化)
 export const instant = false;
@@ -67,14 +67,17 @@ export default async function SettingsPage() {
         )}
 
         {myPending ? (
-          <p className="rounded-2xl bg-primary-soft p-4 text-center text-sm text-muted">
-            你想把額度調成 {myPending.requested_limit},正在等{partner}回應 💙
-          </p>
+          <div className="flex flex-col gap-3 rounded-2xl bg-primary-soft p-4">
+            <p className="text-center text-sm text-muted">
+              你想把額度調成 {myPending.requested_limit},正在等{partner}回應 💙
+            </p>
+            <WithdrawLimitForm id={myPending.id} />
+          </div>
         ) : (
           <>
             {myLast && (
               <p className="text-sm text-muted">
-                上一次申請 {myLast.requested_limit}:{myLast.status === "approved" ? "已經同意了 ✓" : "婉拒了,沒有關係,之後還可以再申請"}
+                上一次申請 {myLast.requested_limit}:{myLast.status === "approved" ? "已經同意了 ✓" : myLast.status === "withdrawn" ? "你撤回了" : "婉拒了,沒有關係,之後還可以再申請"}
               </p>
             )}
             <h3 className="mt-2 text-lg text-foreground">想調整我的額度</h3>

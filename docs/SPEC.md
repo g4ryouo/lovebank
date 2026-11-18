@@ -175,7 +175,7 @@ accepted 或 done_by_giver ─ 提供者「這次免費」─▶ completed  (set
 order_status:   requested | accepted | done_by_giver | completed | declined | cancelled | expired
 ledger_reason:  initial | allowance | order | gift | adjustment
 proposal_status:      pending | countered | agreed | rejected | withdrawn
-limit_request_status: pending | approved | declined
+limit_request_status: pending | approved | declined | withdrawn
 ai_verdict:     ok | caution | unavailable
 
 couples (
@@ -268,7 +268,7 @@ limit_requests (
   decided_by uuid, decided_at timestamptz, created_at timestamptz not null default now()
 )
 -- unique (requester_id) where status = 'pending'
--- 核准者必須是另一位成員
+-- 核准者必須是另一位成員;pending 與 withdrawn 沒有決定者
 
 service_proposals (
   id uuid pk, couple_id uuid not null,
@@ -306,7 +306,7 @@ service_proposals (
 | `waive_order(order_id)` | 提供者「這次免費」 |
 | `send_gift(amount, note)` | 贈送點數給對方,兩筆分錄 |
 | `set_credit_limit(limit)` | **對方**直接設定我的額度(只能設定別人的) |
-| `request_limit(requested_limit, reason)` / `decide_limit_request(id, approve)` | 額度申請與核准(核准者為另一方) |
+| `request_limit(requested_limit, reason)` / `decide_limit_request(id, approve)` / `withdraw_limit_request(id)` | 額度申請、核准或婉拒(核准者為另一方)、申請人撤回待處理的申請 |
 | `respond_proposal(id, action, counter_price)` | 提案的對方:agree / reject / counter |
 | `decide_counter(id, accept bool)` | 提案人對還價:接受或婉拒 |
 | `withdraw_proposal(id)` | 提案人撤回 |

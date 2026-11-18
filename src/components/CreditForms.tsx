@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { decideLimitAction, requestLimitAction, setPartnerLimitAction, type CreditFormState } from "@/lib/credit/actions";
+import { decideLimitAction, requestLimitAction, setPartnerLimitAction, withdrawLimitAction, type CreditFormState } from "@/lib/credit/actions";
 import { SubmitButton } from "./SubmitButton";
 
 const initial: CreditFormState = {};
@@ -70,6 +70,17 @@ export function DecideLimitForm({ id }: { id: string }) {
       <input type="hidden" name="id" value={id} />
       <DecideButton approve label="同意" variant="primary" />
       <DecideButton approve={false} label="婉拒" variant="quiet" />
+      <Status state={state} />
+    </form>
+  );
+}
+
+export function WithdrawLimitForm({ id }: { id: string }) {
+  const [state, action] = useActionState(withdrawLimitAction, initial);
+  return (
+    <form action={action} className="flex flex-col gap-2">
+      <input type="hidden" name="id" value={id} />
+      <SubmitButton pendingText="正在撤回…">撤回這個申請</SubmitButton>
       <Status state={state} />
     </form>
   );

@@ -229,4 +229,22 @@ describe.skipIf(!URL)("資料庫同時執行(整合測試)", { timeout: 60_000 }
     expect(results.find((x) => x.code !== 0)?.err).toContain("ALREADY_PENDING");
     expect(await scalar(`select count(*) from public.limit_requests where requester_id = '${r}' and status = 'pending'`)).toBe("1");
   });
+
+  it("申請人撤回與對方同意同時發生:只會有一種結果,額度與狀態一致", async () => {
+    const { g, r } = await setup();
+    const req = await psql(session(r, `select (public.request_limit(700)).id;`));
+    expect(req.code).toBe(0);
+    const id = req.out.trim().split("\n").pop() ?? "";
+
+    const w = psql(session(r, `select (public.withdraw_limit_request('${id}')).status;`, 1.2));
+    await sleep(400);
+    const d = await psql(session(g, `select (public.decide_limit_request('${id}', true)).status;`));
+    const wRes = await w;
+
+    expect(wRes.code).toBe(0); // 先拿到鎖的是撤回
+    expect(d.code).not.toBe(0); // 對方的同意晚一步:申請已撤回
+    expect(d.err).toContain("INVALID_STATE");
+    expect(await scalar(`select status from public.limit_requests where id = '${id}'`)).toBe("withdrawn");
+    expect(await scalar(`select credit_limit from public.profiles where id = '${r}'`)).toBe("0");
+  });
 });

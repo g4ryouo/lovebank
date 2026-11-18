@@ -1,5 +1,6 @@
 "use server";
 
+import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { friendlyError } from "@/lib/errors";
@@ -39,6 +40,19 @@ export async function decideLimitAction(_prev: CreditFormState, formData: FormDa
   revalidatePath("/settings");
   revalidatePath("/");
   return { message: parsed.data.approve ? "已經同意囉 💙" : "已經婉拒了,沒有任何影響" };
+}
+
+/** 撤回自己待處理的申請(經 withdraw_limit_request;只有申請人能撤回) */
+export async function withdrawLimitAction(_prev: CreditFormState, formData: FormData): Promise<CreditFormState> {
+  const id = z.string().uuid().safeParse(formData.get("id"));
+  if (!id.success) return { error: "找不到這個申請,重新整理看看吧" };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("withdraw_limit_request", { p_request_id: id.data });
+  if (error) return { error: friendlyError(error.message) };
+  revalidatePath("/settings");
+  revalidatePath("/");
+  return { message: "已經撤回囉,想調整時隨時可以再申請" };
 }
 
 /** 直接調整對方的額度(經 set_credit_limit;只能設定對方,不能設定自己) */
