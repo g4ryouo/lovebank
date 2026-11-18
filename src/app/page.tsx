@@ -54,6 +54,16 @@ export default async function Home() {
         <p className="mt-3 text-muted">嗨,{me.nickname}!你們已經配對成功囉</p>
         <p className="mt-6 text-sm text-muted">我的愛心</p>
         <p className="text-5xl text-primary-strong">{wallet.balance}</p>
+        {(wallet.reserved > 0 || wallet.creditLimit > 0) && (
+          <p className="mt-2 text-sm text-muted">
+            可以用的 {wallet.available}
+            {wallet.reserved > 0 ? ` · 預留中 ${wallet.reserved}` : ""}
+            {wallet.creditLimit > 0 ? ` · 額度 ${wallet.creditLimit}` : ""}
+          </p>
+        )}
+        <Link href="/ledger" className="mt-3 inline-block text-sm text-primary-strong underline">
+          看看愛心帳本
+        </Link>
         {todayAllowance.data && <p className="mt-3 text-sm text-muted">今天的零用愛心 +{couple.daily_allowance} 已經入帳囉 ✓</p>}
       </div>
 
