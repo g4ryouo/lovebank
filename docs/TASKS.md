@@ -52,7 +52,7 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 
 ---
 
-## [ ] T3a 點數純邏輯(TypeScript)
+## [x] T3a 點數純邏輯(TypeScript)
 
 **位置**:`src/lib/points/`,每個檔案配 `*.test.ts`。不依賴 React 與 Supabase。
 
@@ -77,6 +77,12 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 1. `migrations/0004_functions_core.sql`:`create_order`、`respond_order`、`cancel_order`、`mark_done`、`confirm_order`、`waive_order`。
 2. `migrations/0005_functions_points.sql`:`touch_couple`、`send_gift`。
 3. `supabase/tests/functions.test.sql`(pgTAP)與 `src/lib/points/db.integration.test.ts`(對本機 Supabase)。
+
+**與 T3a 需一致的規則**(資料庫函式照此實作,並以測試鎖定):
+- 價格 0 的訂單接受時不檢查額度(`canAfford` 價格 0 一律為真)。
+- 檢查順序:先權限(`NOT_ALLOWED`),再狀態(`INVALID_STATE`);已在目標狀態且有權限 → 無副作用的成功。
+- 自動確認:`now() >= auto_confirm_at` 才成立,否則 `INVALID_STATE`。
+- 零用點數:起算日為 `paired_at` 當地隔天,只補到當地今天,最近 `ALLOWANCE_CATCH_UP_DAYS` 天內未發者。
 
 **驗收(必須)**
 - 同一筆訂單**連續兩次或同時兩次** `confirm_order`:ledger 只有 2 筆,第二次為無副作用的成功。
