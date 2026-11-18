@@ -98,7 +98,7 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 
 ---
 
-## [~] T4 LINE 登入與配對
+## [x] T4 LINE 登入與配對
 
 **內容**
 - LINE Login 設定(LINE Developers channel、redirect URL;LINE 不一定回傳 email,帳號不得只靠 email 辨識)。先確認 Supabase 自訂 OIDC 提供者可用;不可用時列出替代方案與取捨,不自行決定。使用整頁導向流程,不用 popup(iOS 主畫面 PWA 相容)。
@@ -106,7 +106,7 @@ T1 → T2 → T3a → T3b → T4 → T5 → T6 → T7 → T8 → T9 → T10 → 
 - 畫面:`/login`、`/pair`。配對完成發放 `initial`。
 - Playwright 流程:登入 → 建立 → 另一帳號加入(用測試帳號或 mock auth)。
 
-**進度備註**:資料庫(`0006_pairing.sql`,pgTAP 43 項、同時加入並發測試)、`/login`、`/auth/callback`、`/pair`、首頁簡易版、`proxy.ts` 登入保護已完成。Playwright 6 項(登入保護、真的跳到 LINE 登入頁、錯誤訊息、`next` 參數防外跳)通過;雲端環境以 `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium pnpm test:e2e` 執行。LINE 登入設定已用 Supabase 實際驗證會導向 LINE。**登入方式變更(經使用者決定)**:一般瀏覽器的 LINE Login 需輸入 LINE 帳號密碼,體驗不佳,改以 LIFF 為主:在 LINE 內打開 `https://liff.line.me/<LIFF_ID>` 自動登入(`src/lib/auth/liff-login.ts`、`LoginPanel`),一般瀏覽器保留「用 LINE 登入」按鈕。已確認 Supabase 的 `custom:line` 會對 ID token 做驗證;真實 ID token 待手機實測。新增套件 `@line/liff`、環境變數 `NEXT_PUBLIC_LIFF_ID`(Vercel 也要設)。**配對死結修正(經使用者要求)**:兩人各自按「建立」會各成一對且無法離開。`0007_join_switch.sql` 讓 `join_couple` 可放棄「單人且尚未配對」的自己的一對(已配對者仍 `INVALID_STATE`;失敗整筆回復;兩個 couple 依 id 排序加鎖避免互相加入時死結),`/pair` 在等待對方時仍顯示「我有對方的邀請碼」。pgTAP 61 項、並發測試(含兩人同時互相加入)通過。**待辦**:(1) 在 Supabase 專案套用 migration(含 0007)(SQL Editor 執行合併檔);(2) Supabase Redirect URLs 加入網站網址;(3) 兩個真實 LINE 帳號完成「登入 → 建立 → 加入 → 各 2000 愛心」實測(完整雙帳號流程無法自動化,需 LINE 登入),通過後改為 `[x]`。
+**進度備註**:資料庫(`0006_pairing.sql`,pgTAP 43 項、同時加入並發測試)、`/login`、`/auth/callback`、`/pair`、首頁簡易版、`proxy.ts` 登入保護已完成。Playwright 6 項(登入保護、真的跳到 LINE 登入頁、錯誤訊息、`next` 參數防外跳)通過;雲端環境以 `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium pnpm test:e2e` 執行。LINE 登入設定已用 Supabase 實際驗證會導向 LINE。**登入方式變更(經使用者決定)**:一般瀏覽器的 LINE Login 需輸入 LINE 帳號密碼,體驗不佳,改以 LIFF 為主:在 LINE 內打開 `https://liff.line.me/<LIFF_ID>` 自動登入(`src/lib/auth/liff-login.ts`、`LoginPanel`),一般瀏覽器保留「用 LINE 登入」按鈕。已確認 Supabase 的 `custom:line` 會對 ID token 做驗證;真實 ID token 待手機實測。新增套件 `@line/liff`、環境變數 `NEXT_PUBLIC_LIFF_ID`(Vercel 也要設)。**配對死結修正(經使用者要求)**:兩人各自按「建立」會各成一對且無法離開。`0007_join_switch.sql` 讓 `join_couple` 可放棄「單人且尚未配對」的自己的一對(已配對者仍 `INVALID_STATE`;失敗整筆回復;兩個 couple 依 id 排序加鎖避免互相加入時死結),`/pair` 在等待對方時仍顯示「我有對方的邀請碼」。pgTAP 61 項、並發測試(含兩人同時互相加入)通過。**實測結果**:已在真實 Supabase 套用 migration(0001–0007),用兩支手機經 LIFF 登入、配對成功,顯示 2000 愛心;匿名使用者讀不到任何資料表、呼叫不了任何函式(以公開金鑰實測)。~~待辦~~:(1) 在 Supabase 專案套用 migration(含 0007)(SQL Editor 執行合併檔);(2) Supabase Redirect URLs 加入網站網址;(3) 兩個真實 LINE 帳號完成「登入 → 建立 → 加入 → 各 2000 愛心」實測(完整雙帳號流程無法自動化,需 LINE 登入),通過後改為 `[x]`。
 
 **驗收**:兩個帳號能配成一對;第三人加入失敗;雙方各有 2000 愛心。
 
