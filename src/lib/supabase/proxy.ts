@@ -7,6 +7,15 @@ const PUBLIC_PATHS = ["/login", "/auth"];
 
 /** 更新 session cookie,並把未登入者導向 /login */
 export async function updateSession(request: NextRequest) {
+  // 部署時漏設環境變數,是最常見的上線問題:給出明確說明,而不是一片 500
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return new NextResponse(
+      "愛愛銀行還沒設定好:缺少 NEXT_PUBLIC_SUPABASE_URL 或 NEXT_PUBLIC_SUPABASE_ANON_KEY。\n" +
+        "請到 Vercel 專案的 Settings → Environment Variables 新增(要勾選 Production),然後重新部署。",
+      { status: 503, headers: { "content-type": "text/plain; charset=utf-8" } },
+    );
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient<Database>(
