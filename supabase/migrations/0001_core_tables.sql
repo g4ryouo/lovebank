@@ -1,7 +1,7 @@
 -- 0001 核心資料表與 enum(SPEC 第 7 節)。約束只能比 SPEC 更嚴,不得放寬。
 
 create type public.order_status as enum
-  ('requested', 'accepted', 'done_by_giver', 'completed', 'declined', 'cancelled');
+  ('requested', 'accepted', 'done_by_giver', 'completed', 'declined', 'cancelled', 'expired');
 create type public.ledger_reason as enum
   ('initial', 'allowance', 'order', 'gift', 'adjustment');
 create type public.proposal_status as enum
@@ -63,6 +63,7 @@ create table public.orders (
   accepted_at timestamptz,
   done_at timestamptz,
   auto_confirm_at timestamptz,
+  expires_at timestamptz,
   completed_at timestamptz,
   updated_at timestamptz not null default now(),
   check (giver_id <> receiver_id),

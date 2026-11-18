@@ -22,6 +22,7 @@ const RULES: Record<OrderAction, Rule> = {
   confirm: { from: ["done_by_giver"], to: "completed", settle: "price" },
   waive: { from: ["accepted", "done_by_giver"], to: "completed", settle: "free" },
   auto_confirm: { from: ["done_by_giver"], to: "completed", settle: "price" },
+  expire: { from: ["requested"], to: "expired", settle: null },
 };
 
 export function roleOf(userId: string, order: Pick<OrderLike, "giverId" | "receiverId">): OrderRole | null {
@@ -37,8 +38,9 @@ function isResponder(userId: string, order: OrderLike): boolean {
 
 /** 這位操作者在「目前狀態」下是否有權限做這個動作 */
 function isAllowed(action: OrderAction, actor: Actor, order: OrderLike): boolean {
-  if (actor.type === "system") return action === "auto_confirm";
-  if (action === "auto_confirm") return false;
+  const systemOnly = action === "auto_confirm" || action === "expire";
+  if (actor.type === "system") return systemOnly;
+  if (systemOnly) return false;
   const role = roleOf(actor.id, order);
   if (role === null) return false;
   switch (action) {
@@ -53,12 +55,15 @@ function isAllowed(action: OrderAction, actor: Actor, order: OrderLike): boolean
       return role === "giver";
     case "confirm":
       return role === "receiver";
+    default:
+      return false;
   }
 }
 
 /**
  * 判斷某個動作能否進行。檢查順序與資料庫一致:先權限(NOT_ALLOWED),再狀態(INVALID_STATE)。
- * 已在目標狀態 → 無副作用的成功。自動確認需 now ≥ auto_confirm_at。
+ * 已在目標狀態 → 無副作用的成功。自動確認需 now ≥ auto_confirm_at;自動過期需 now ≥ expires_at。
+ * requested 訂單逾期後,接受 / 婉拒 / 取消一律 INVALID_STATE(等 touch_couple 標為 expired)。
  */
 export function canTransition(
   state: OrderStatus,
@@ -75,6 +80,14 @@ export function canTransition(
   if (state === rule.to) return { ok: true, noop: true, to: rule.to };
   if (!rule.from.includes(state)) return { ok: false, code: "INVALID_STATE" };
 
+  if (state === "requested") {
+    const overdue = order.expiresAt !== null && order.expiresAt.getTime() <= now.getTime();
+    if (action === "expire") {
+      if (!overdue) return { ok: false, code: "INVALID_STATE" };
+    } else if (overdue) {
+      return { ok: false, code: "INVALID_STATE" };
+    }
+  }
   if (action === "auto_confirm") {
     if (order.autoConfirmAt === null || order.autoConfirmAt.getTime() > now.getTime()) {
       return { ok: false, code: "INVALID_STATE" };

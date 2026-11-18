@@ -5,6 +5,7 @@ describe("config", () => {
   it("SPEC 第 3 節常數", () => {
     expect(config.INITIAL_GRANT).toBe(2000);
     expect(config.DAILY_ALLOWANCE).toBe(500);
+    expect(config.REQUEST_EXPIRE_DAYS).toBe(3);
     expect(config.MAX_PRICE).toBe(100000);
     expect(config.DEFAULT_TIMEZONE).toBe("Asia/Taipei");
   });

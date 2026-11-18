@@ -7,10 +7,11 @@ export const ORDER_STATUSES = [
   "completed",
   "declined",
   "cancelled",
+  "expired",
 ] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
-export const TERMINAL_STATUSES: readonly OrderStatus[] = ["completed", "declined", "cancelled"];
+export const TERMINAL_STATUSES: readonly OrderStatus[] = ["completed", "declined", "cancelled", "expired"];
 /** 會占用接受者額度的狀態(SPEC 5.1 的 reserved) */
 export const RESERVING_STATUSES: readonly OrderStatus[] = ["accepted", "done_by_giver"];
 
@@ -21,7 +22,8 @@ export type OrderAction =
   | "mark_done"
   | "confirm"
   | "waive"
-  | "auto_confirm";
+  | "auto_confirm"
+  | "expire";
 
 export type LedgerReason = "initial" | "allowance" | "order" | "gift" | "adjustment";
 
@@ -57,6 +59,8 @@ export interface OrderLike {
   initiatedBy: string;
   priceSnapshot: number;
   autoConfirmAt: Date | null;
+  /** requested 訂單的過期時間 */
+  expiresAt: Date | null;
 }
 
 export interface LedgerEntryDraft {

@@ -93,14 +93,14 @@ isOneToOne: false
                   ]
                 },"orders": {
                   Row: {
-                    "accepted_at": string | null,"auto_confirm_at": string | null,"completed_at": string | null,"couple_id": string,"created_at": string,"done_at": string | null,"emoji_snapshot": string | null,"giver_id": string,"id": string,"initiated_by": string,"menu_item_id": string,"note": string | null,"price_snapshot": number,"receiver_id": string,"settled_amount": number | null,"status": Database["public"]['Enums']["order_status"],"title_snapshot": string,"updated_at": string
+                    "accepted_at": string | null,"auto_confirm_at": string | null,"completed_at": string | null,"couple_id": string,"created_at": string,"done_at": string | null,"emoji_snapshot": string | null,"expires_at": string | null,"giver_id": string,"id": string,"initiated_by": string,"menu_item_id": string,"note": string | null,"price_snapshot": number,"receiver_id": string,"settled_amount": number | null,"status": Database["public"]['Enums']["order_status"],"title_snapshot": string,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "accepted_at"?: string | null,"auto_confirm_at"?: string | null,"completed_at"?: string | null,"couple_id": string,"created_at"?: string,"done_at"?: string | null,"emoji_snapshot"?: string | null,"giver_id": string,"id"?: string,"initiated_by": string,"menu_item_id": string,"note"?: string | null,"price_snapshot": number,"receiver_id": string,"settled_amount"?: number | null,"status"?: Database["public"]['Enums']["order_status"],"title_snapshot": string,"updated_at"?: string
+                    "accepted_at"?: string | null,"auto_confirm_at"?: string | null,"completed_at"?: string | null,"couple_id": string,"created_at"?: string,"done_at"?: string | null,"emoji_snapshot"?: string | null,"expires_at"?: string | null,"giver_id": string,"id"?: string,"initiated_by": string,"menu_item_id": string,"note"?: string | null,"price_snapshot": number,"receiver_id": string,"settled_amount"?: number | null,"status"?: Database["public"]['Enums']["order_status"],"title_snapshot": string,"updated_at"?: string
                   }
                   Update: {
-                    "accepted_at"?: string | null,"auto_confirm_at"?: string | null,"completed_at"?: string | null,"couple_id"?: string,"created_at"?: string,"done_at"?: string | null,"emoji_snapshot"?: string | null,"giver_id"?: string,"id"?: string,"initiated_by"?: string,"menu_item_id"?: string,"note"?: string | null,"price_snapshot"?: number,"receiver_id"?: string,"settled_amount"?: number | null,"status"?: Database["public"]['Enums']["order_status"],"title_snapshot"?: string,"updated_at"?: string
+                    "accepted_at"?: string | null,"auto_confirm_at"?: string | null,"completed_at"?: string | null,"couple_id"?: string,"created_at"?: string,"done_at"?: string | null,"emoji_snapshot"?: string | null,"expires_at"?: string | null,"giver_id"?: string,"id"?: string,"initiated_by"?: string,"menu_item_id"?: string,"note"?: string | null,"price_snapshot"?: number,"receiver_id"?: string,"settled_amount"?: number | null,"status"?: Database["public"]['Enums']["order_status"],"title_snapshot"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -196,7 +196,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "ai_verdict": "ok"|"caution"|"unavailable","ledger_reason": "initial"|"allowance"|"order"|"gift"|"adjustment","limit_request_status": "pending"|"approved"|"declined","order_status": "requested"|"accepted"|"done_by_giver"|"completed"|"declined"|"cancelled","proposal_status": "pending"|"countered"|"agreed"|"rejected"|"withdrawn"
+            "ai_verdict": "ok"|"caution"|"unavailable","ledger_reason": "initial"|"allowance"|"order"|"gift"|"adjustment","limit_request_status": "pending"|"approved"|"declined","order_status": "requested"|"accepted"|"done_by_giver"|"completed"|"declined"|"cancelled"|"expired","proposal_status": "pending"|"countered"|"agreed"|"rejected"|"withdrawn"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -312,7 +312,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "ai_verdict": ["ok", "caution", "unavailable"],"ledger_reason": ["initial", "allowance", "order", "gift", "adjustment"],"limit_request_status": ["pending", "approved", "declined"],"order_status": ["requested", "accepted", "done_by_giver", "completed", "declined", "cancelled"],"proposal_status": ["pending", "countered", "agreed", "rejected", "withdrawn"]
+            "ai_verdict": ["ok", "caution", "unavailable"],"ledger_reason": ["initial", "allowance", "order", "gift", "adjustment"],"limit_request_status": ["pending", "approved", "declined"],"order_status": ["requested", "accepted", "done_by_giver", "completed", "declined", "cancelled", "expired"],"proposal_status": ["pending", "countered", "agreed", "rejected", "withdrawn"]
           }
         }
 } as const

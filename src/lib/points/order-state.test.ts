@@ -10,8 +10,8 @@ const NOW = new Date("2026-01-10T12:00:00Z");
 const user = (id: string): Actor => ({ type: "user", id });
 const SYSTEM: Actor = { type: "system" };
 
-function order(status: OrderStatus, initiatedBy = R, autoConfirmAt: Date | null = null): OrderLike {
-  return { id: "o1", status, giverId: G, receiverId: R, initiatedBy, priceSnapshot: 100, autoConfirmAt };
+function order(status: OrderStatus, initiatedBy = R, autoConfirmAt: Date | null = null, expiresAt: Date | null = null): OrderLike {
+  return { id: "o1", status, giverId: G, receiverId: R, initiatedBy, priceSnapshot: 100, autoConfirmAt, expiresAt };
 }
 const run = (status: OrderStatus, action: OrderAction, actor: Actor, o = order(status), now = NOW) =>
   canTransition(status, action, actor, o, now);
@@ -81,7 +81,7 @@ describe("非權限方 → NOT_ALLOWED", () => {
     expect(run("done_by_giver", "confirm", SYSTEM)).toEqual({ ok: false, code: "NOT_ALLOWED" });
   });
   it("非訂單成員做任何動作都是 NOT_ALLOWED(含非法來源狀態,權限優先)", () => {
-    const actions: OrderAction[] = ["accept", "decline", "cancel", "mark_done", "confirm", "waive", "auto_confirm"];
+    const actions: OrderAction[] = ["accept", "decline", "cancel", "mark_done", "confirm", "waive", "auto_confirm", "expire"];
     for (const status of ORDER_STATUSES) {
       for (const a of actions) {
         expect(run(status, a, user(X))).toEqual({ ok: false, code: "NOT_ALLOWED" });
@@ -120,6 +120,42 @@ describe("非法來源狀態 → INVALID_STATE", () => {
   });
   it("accepted 不能自動確認", () => {
     expect(run("accepted", "auto_confirm", SYSTEM, order("accepted", R, NOW))).toEqual({ ok: false, code: "INVALID_STATE" });
+  });
+});
+
+describe("邀請 3 天未回應自動過期", () => {
+  const past = new Date(NOW.getTime() - 1);
+  const future = new Date(NOW.getTime() + 1);
+  it("逾期(含剛好等於)由系統標為 expired", () => {
+    expect(run("requested", "expire", SYSTEM, order("requested", R, null, past))).toEqual({ ok: true, noop: false, to: "expired", settle: null });
+    expect(run("requested", "expire", SYSTEM, order("requested", R, null, NOW))).toMatchObject({ ok: true, to: "expired" });
+  });
+  it("未逾期或沒有 expires_at → INVALID_STATE", () => {
+    expect(run("requested", "expire", SYSTEM, order("requested", R, null, future))).toEqual({ ok: false, code: "INVALID_STATE" });
+    expect(run("requested", "expire", SYSTEM, order("requested", R, null, null))).toEqual({ ok: false, code: "INVALID_STATE" });
+  });
+  it("只有系統能過期;使用者 NOT_ALLOWED", () => {
+    expect(run("requested", "expire", user(G), order("requested", R, null, past))).toEqual({ ok: false, code: "NOT_ALLOWED" });
+    expect(run("requested", "expire", user(X), order("requested", R, null, past))).toEqual({ ok: false, code: "NOT_ALLOWED" });
+  });
+  it("非 requested 不能過期;已 expired 重複過期為無操作", () => {
+    expect(run("accepted", "expire", SYSTEM, order("accepted", R, null, past))).toEqual({ ok: false, code: "INVALID_STATE" });
+    expect(run("expired", "expire", SYSTEM, order("expired", R, null, past))).toEqual({ ok: true, noop: true, to: "expired" });
+  });
+  it("逾期的 requested:接受、婉拒、取消都是 INVALID_STATE", () => {
+    const o = order("requested", R, null, past);
+    expect(run("requested", "accept", user(G), o)).toEqual({ ok: false, code: "INVALID_STATE" });
+    expect(run("requested", "decline", user(G), o)).toEqual({ ok: false, code: "INVALID_STATE" });
+    expect(run("requested", "cancel", user(R), o)).toEqual({ ok: false, code: "INVALID_STATE" });
+  });
+  it("未逾期仍可正常回應", () => {
+    expect(run("requested", "accept", user(G), order("requested", R, null, future))).toMatchObject({ ok: true, to: "accepted" });
+  });
+  it("expired 是終態:其他動作都 INVALID_STATE", () => {
+    const o = order("expired", R, null, past);
+    expect(run("expired", "accept", user(G), o)).toEqual({ ok: false, code: "INVALID_STATE" });
+    expect(run("expired", "cancel", user(R), o)).toEqual({ ok: false, code: "INVALID_STATE" });
+    expect(run("expired", "mark_done", user(G), o)).toEqual({ ok: false, code: "INVALID_STATE" });
   });
 });
 

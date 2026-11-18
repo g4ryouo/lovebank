@@ -27,7 +27,7 @@
 ## 2. MVP 範圍
 
 配對、LINE 登入、我的菜單與範本、瀏覽對方菜單與點單(含主動邀請)、
-訂單流程(接受/婉拒/取消/做完了/確認/這次免費/24 小時自動確認)、贈送點數、
+訂單流程(接受/婉拒/取消/做完了/確認/這次免費/24 小時自動確認/邀請 3 天未回應自動過期)、贈送點數、
 零用點數、信用額度申請與核准、服務提案(AI 審查加還價一次)、願望進度條、帳本與首頁。
 
 **MVP 之後才考慮**:推播通知、打卡成就、異地戀玩法、多人群組、每週次數上限、額度提醒與其他額度玩法、解除配對。
@@ -40,6 +40,7 @@
 | `DAILY_ALLOWANCE` | 500 | 每人每天,累積不清零 |
 | `ALLOWANCE_CATCH_UP_DAYS` | 7 | 最多補發最近幾天(暫定,可調) |
 | `AUTO_CONFIRM_HOURS` | 24 | 「做完了」之後自動確認的時限 |
+| `REQUEST_EXPIRE_DAYS` | 3 | `requested` 訂單未回應即自動過期的天數 |
 | `MAX_PRICE` | 100000 | 菜單價格上限 |
 | `DEFAULT_CREDIT_LIMIT` | 0 | 新使用者預設信用額度 |
 | `MAX_CREDIT_LIMIT` | 待定 | 見第 12 節 |
@@ -112,6 +113,7 @@ MVP 不使用排程。使用者開啟 App、重新整理首頁或訂單頁時,�
 
 1. 補發零用點數。
 2. 找出 `status = 'done_by_giver'` 且 `auto_confirm_at <= now()` 的訂單,依確認流程自動完成。
+3. 找出 `status = 'requested'` 且 `expires_at <= now()` 的訂單,標為 `expired`(不影響任何點數)。
 
 這兩件事都必須冪等。若之後需要,再加 pg_cron 呼叫同一個函式。
 
@@ -121,13 +123,16 @@ MVP 不使用排程。使用者開啟 App、重新整理首頁或訂單頁時,�
 requested ─ 回應者婉拒 ──────────▶ declined
 requested ─ 發起者取消 ──────────▶ cancelled
 requested ─ 回應者接受 ──────────▶ accepted         (權威額度檢查;接受者的點數開始預留)
+requested ─ 3 天未回應(系統)────▶ expired          (expires_at = 建立時間 + 3 天;不影響點數)
 accepted  ─ 任一方取消 ──────────▶ cancelled
 accepted  ─ 提供者「做完了」─────▶ done_by_giver     (設定 auto_confirm_at = now + 24h)
 done_by_giver ─ 接受者確認 / 24 小時自動 ─▶ completed   (settled_amount = price_snapshot;> 0 則寫 2 筆 ledger)
 accepted 或 done_by_giver ─ 提供者「這次免費」─▶ completed  (settled_amount = 0;不寫 ledger)
 ```
 
-終態:`declined`、`cancelled`、`completed`。
+終態:`declined`、`cancelled`、`expired`、`completed`。
+
+`requested` 訂單一旦逾期(`now() >= expires_at`),即使 `touch_couple` 尚未執行,接受、婉拒、取消也都視為 `INVALID_STATE`;下次 `touch_couple` 會把它標為 `expired`。
 
 ### 角色與權限
 
@@ -140,6 +145,7 @@ accepted 或 done_by_giver ─ 提供者「這次免費」─▶ completed  (set
 | 確認 | 接受者 | done_by_giver |
 | 這次免費 | 提供者 | accepted, done_by_giver |
 | 自動確認 | 系統(touch_couple) | done_by_giver 且逾時 |
+| 自動過期 | 系統(touch_couple) | requested 且逾時 |
 
 ### 建立訂單
 
@@ -164,7 +170,7 @@ accepted 或 done_by_giver ─ 提供者「這次免費」─▶ completed  (set
 
 ```sql
 -- enum
-order_status:   requested | accepted | done_by_giver | completed | declined | cancelled
+order_status:   requested | accepted | done_by_giver | completed | declined | cancelled | expired
 ledger_reason:  initial | allowance | order | gift | adjustment
 proposal_status:      pending | countered | agreed | rejected | withdrawn
 limit_request_status: pending | approved | declined
@@ -222,6 +228,7 @@ orders (
   accepted_at timestamptz,
   done_at timestamptz,
   auto_confirm_at timestamptz,
+  expires_at timestamptz,                     -- requested 的過期時間(建立時設定)
   completed_at timestamptz,
   updated_at timestamptz not null default now(),
   check (giver_id <> receiver_id),
@@ -288,7 +295,7 @@ service_proposals (
 | --- | --- |
 | `create_couple(nickname)` | 建立情侶與邀請碼,建立自己的 profile |
 | `join_couple(code, nickname)` | 鎖 couple 列,檢查邀請碼有效且成員未滿 2 人;加入後設 `paired_at`,雙方各寫 `initial` |
-| `touch_couple()` | 補發零用點數、自動確認逾時訂單(冪等) |
+| `touch_couple()` | 補發零用點數、自動確認逾時訂單、過期未回應的邀請(冪等) |
 | `create_order(menu_item_id, note)` | 見第 6 節「建立訂單」 |
 | `respond_order(order_id, accept bool)` | 回應者接受或婉拒;接受時做權威額度檢查 |
 | `cancel_order(order_id)` | 取消 |

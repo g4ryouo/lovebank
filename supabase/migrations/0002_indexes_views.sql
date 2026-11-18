@@ -7,6 +7,8 @@ create index orders_couple_status_idx on public.orders (couple_id, status);
 create index orders_receiver_status_idx on public.orders (receiver_id, status);
 create index orders_auto_confirm_idx on public.orders (auto_confirm_at)
   where status = 'done_by_giver';
+create index orders_expires_idx on public.orders (expires_at)
+  where status = 'requested';
 create index ledger_user_created_idx on public.ledger (user_id, created_at);
 create index limit_requests_couple_idx on public.limit_requests (couple_id);
 create index service_proposals_couple_idx on public.service_proposals (couple_id);
