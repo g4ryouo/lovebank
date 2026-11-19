@@ -10,6 +10,13 @@ test.describe("登入保護與 LINE 登入入口", () => {
     await expect(page.getByRole("heading", { name: "愛愛銀行" })).toBeVisible();
   });
 
+  test("登入頁有個資說明,並可展開看保存了哪些資料", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByText("只用來記錄你們的愛心進度")).toBeVisible();
+    await page.getByText("我們會保存哪些資料?").click();
+    await expect(page.getByText("LINE 提供的名稱與大頭貼")).toBeVisible();
+  });
+
   test("登入頁標題是愛愛銀行", async ({ page }) => {
     await page.goto("/login");
     await expect(page).toHaveTitle("愛愛銀行");

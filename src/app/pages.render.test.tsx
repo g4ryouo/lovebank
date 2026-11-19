@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { FakeDb } from "@/test/fake-supabase";
 import { IDS, VIEWER, scenario } from "@/test/scenario";
 
-const h = vi.hoisted(() => ({ db: {} as FakeDb, viewer: {} as Record<string, unknown>, rpc: {} as Record<string, unknown> }));
+const h = vi.hoisted(() => ({ db: {} as FakeDb, viewer: {} as Record<string, unknown>, rpc: {} as Record<string, unknown>, anonymous: false }));
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh() {}, replace() {}, push() {} }),
@@ -26,7 +26,13 @@ vi.mock("@/lib/auth/viewer", async () => {
 });
 vi.mock("@/lib/supabase/server", async () => {
   const { fakeSupabase: f } = await import("@/test/fake-supabase");
-  return { createClient: async () => f(h.db, h.rpc) };
+  return {
+    createClient: async () => {
+      const c = f(h.db, h.rpc);
+      if (h.anonymous) c.auth.getUser = async () => ({ data: { user: null as unknown as { id: string } } });
+      return c;
+    },
+  };
 });
 
 const DUMP = process.env.DUMP_HTML;
@@ -225,6 +231,23 @@ describe("設定、提案、帳本、配對、小幫手、登入", () => {
     const { default: Ledger } = await import("@/app/ledger/page");
     const html = await render("ledger", Ledger());
     expect(text(html)).toContain("轉讓愛心給小恩恩");
+  });
+  it("登入頁:有個資說明,而且內容與實際保存的資料一致(不能寫「不保留任何個資」)", async () => {
+    setup();
+    h.anonymous = true; // 登入頁只給「還沒登入」的人看
+    const { default: Login } = await import("@/app/login/page");
+    const html = await render("login", Login({ searchParams: Promise.resolve({}) }));
+    h.anonymous = false;
+    const t = text(html);
+    expect(t).toContain("只用來記錄你們的愛心進度");
+    expect(t).toContain("請安心使用");
+    expect(t).toContain("我們會保存哪些資料");
+    // 如實說明:會保存的、不會保存的、AI 的部分
+    for (const must of ["LINE 提供的名稱與大頭貼", "你取的暱稱", "愛心與邀請紀錄", "電話、地址", "對話內容", "送給 AI"]) expect(t, must).toContain(must);
+    // 不能出現與事實不符的絕對說法
+    expect(t).not.toContain("不會保留任何個資");
+    expect(t).not.toContain("不保留任何個資");
+    expect(t).not.toContain("沒有保存任何");
   });
   it("小幫手", async () => {
     const { default: Help } = await import("@/app/help/page");
